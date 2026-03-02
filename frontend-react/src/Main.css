@@ -1,0 +1,74 @@
+/* Navbar */
+.navbar {
+  background: linear-gradient(90deg, #000000, #1a1a1a);
+  border-bottom: 4px solid var(--highlight-color);
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navbar-title { font-size: 2em; color: var(--highlight-color); text-shadow: 3px 3px 0px #000000; }
+.btn-logout { padding: 8px 18px; background: var(--highlight-color); border: 2px solid #000; font-weight: 800; cursor: pointer; }
+
+/* Layout */
+.main-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 250px 1fr;
+  gap: 30px;
+  padding: 30px 20px;
+}
+
+/* Sidebar */
+.sidebar {
+  background: rgba(0, 0, 0, 0.8);
+  border: 3px solid var(--highlight-color);
+  padding: 20px;
+  height: fit-content;
+}
+
+.menu-btn {
+  width: 100%; padding: 12px 15px; margin-bottom: 10px;
+  background: rgba(255, 0, 0, 0.1); border: 2px solid var(--highlight-color);
+  color: var(--highlight-color); cursor: pointer; text-align: left;
+}
+.menu-btn.active { background: var(--highlight-color); color: #000; font-weight: 900; }
+
+/* Forms & Cards */
+.form-section {
+  background: rgba(0, 0, 0, 0.8); border: 2px solid var(--highlight-color);
+  padding: 25px; margin-bottom: 30px;
+}
+.form-group-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px; }
+.form-input, .form-select { width: 100%; padding: 12px; background: rgba(255,255,255,0.05); border: 2px solid #333; color: #fff; }
+.btn-add { padding: 12px 25px; background: var(--highlight-color); border: 3px solid #000; font-weight: 900; cursor: pointer; }
+
+.items-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+.item-card { background: rgba(0,0,0,0.8); border: 3px solid var(--highlight-color); padding: 20px; position: relative; }
+
+.item-header { display: flex; justify-content: space-between; margin-bottom: 15px; }
+.btn-action { background: none; border: none; font-size: 1.2em; cursor: pointer; margin-left: 5px; }
+
+/* Colores específicos por tipo */
+.cancion-card { border-left: 6px solid #3b82f6; }
+.usuario-card { border-left: 6px solid #8b5cf6; }
+.tarea-card { border-left: 6px solid #ec4899; }
+.evento-card { border-left: 6px solid #f59e0b; }
+
+.tarea-card.completada { opacity: 0.6; }
+.tarea-card.completada h3 { text-decoration: line-through; }
+.prioridad-alta { color: var(--danger-color); }
+.prioridad-media { color: var(--warning-color); }
+.prioridad-baja { color: var(--success-color); }
+
+/* Modal */
+.modal-overlay {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center; z-index: 1000;
+}
+.modal-content {
+  background: #1a1a1a; border: 3px solid var(--warning-color);
+  padding: 20px; width: 90%; max-width: 500px;
+}

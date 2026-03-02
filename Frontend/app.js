@@ -117,6 +117,41 @@ function inicializarPaginaPrincipal() {
     cargarEventos();
 }
 
+// --- EFECTOS VISUALES (NUEVO) ---
+function aplicarEfectosCartas(container) {
+    const cards = container.querySelectorAll('.item-card');
+    cards.forEach((card, index) => {
+        // 1. Animación de entrada escalonada
+        card.style.opacity = '0';
+        card.style.animation = `slideIn 0.5s ease forwards ${index * 0.1}s`;
+
+        // 2. Efecto 3D Tilt al mover el mouse
+        card.addEventListener('mousemove', (e) => {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            
+            // Calcular rotación
+            const rotateX = ((y - centerY) / centerY) * -10; // -10 deg max
+            const rotateY = ((x - centerX) / centerX) * 10;  // 10 deg max
+
+            card.style.transition = 'none'; // Quitar transición para movimiento fluido
+            card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.05)`;
+            card.style.zIndex = '10';
+            card.style.borderColor = '#ff0000';
+        });
+
+        card.addEventListener('mouseleave', () => {
+            card.style.transition = 'all 0.5s ease'; // Restaurar suavidad al salir
+            card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale(1)';
+            card.style.zIndex = '1';
+            card.style.borderColor = 'var(--highlight-color)';
+        });
+    });
+}
+
 // --- GESTIÓN DE CANCIONES ---
 async function agregarCancion() {
     const titulo = document.getElementById('cancionTitulo').value.trim();
@@ -154,6 +189,7 @@ async function cargarCanciones() {
                 <p><strong>GÉNERO:</strong> ${(c.genero || '---').toUpperCase()}</p>
             </div>
         `).join('');
+        aplicarEfectosCartas(container); // Aplicar efectos
     } catch (e) { console.error(e); }
 }
 
@@ -200,6 +236,7 @@ async function cargarFans() {
                 <p><strong>PAÍS:</strong> ${(f.pais || '---').toUpperCase()}</p>
             </div>
         `).join('');
+        aplicarEfectosCartas(container); // Aplicar efectos
     } catch (e) { console.error(e); }
 }
 
@@ -251,6 +288,7 @@ async function cargarTareas() {
                 </div>
             </div>
         `).join('');
+        aplicarEfectosCartas(container); // Aplicar efectos
     } catch (e) { console.error(e); }
 }
 
@@ -306,6 +344,7 @@ async function cargarEventos() {
                 <p><strong>LUGAR:</strong> ${(e.lugar || '---').toUpperCase()}</p>
             </div>
         `).join('');
+        aplicarEfectosCartas(container); // Aplicar efectos
     } catch (e) { console.error(e); }
 }
 
@@ -398,3 +437,18 @@ document.getElementById('formEdicion').addEventListener('submit', async (e) => {
         } else { alert('Error al modificar.'); }
     } catch (error) { alert('Error de conexión'); }
 });
+
+// --- EFECTO PARALLAX FONDO ---
+let mouseX = 0, mouseY = 0;
+document.addEventListener('mousemove', (e) => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+});
+
+function animateBackground() {
+    const moveX = (mouseX * -0.015);
+    const moveY = (mouseY * -0.015);
+    document.body.style.backgroundPosition = `calc(50% + ${moveX}px) calc(50% + ${moveY}px)`;
+    requestAnimationFrame(animateBackground);
+}
+animateBackground();
