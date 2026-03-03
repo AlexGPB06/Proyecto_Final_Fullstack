@@ -1,0 +1,32 @@
+:root {
+  --highlight-color: #ff0000;
+  --text-color: #ffffff;
+  --text-muted: #cccccc;
+  --success-color: #ff6600;
+  --warning-color: #ffff00;
+  --danger-color: #ff0000;
+  --shadow: 0 8px 32px rgba(255, 0, 0, 0.4);
+  --transition: all 0.3s ease;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  width: 100%;
+  min-height: 100vh;
+  font-family: 'Impact', 'Arial Black', sans-serif;
+  background: #121212; /* Color de respaldo */
+  color: var(--text-color);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Efecto de líneas CRT/Scanline */
+body::after {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: repeating-linear-gradient(0deg, rgba(255, 0, 0, 0.03) 0px, rgba(255, 0, 0, 0.03) 1px, transparent 1px, transparent 2px);
+  pointer-events: none;
+  z-index: 9999;
+}
