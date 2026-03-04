@@ -4,9 +4,9 @@ import ForoAprobado from './ForoAprobado';
 
 const API_URL = 'http://localhost:3000/api';
 
-function Foros({ userRol }) {
+// RECIBIMOS LA FUNCIÓN AQUÍ
+function Foros({ userRol, irAPerfil }) {
   const [data, setData] = useState([]);
-  // Añadimos 'descripcion' al estado inicial
   const [newItem, setNewItem] = useState({ titulo: '', descripcion: '' }); 
   const [foroActivo, setForoActivo] = useState(null); 
 
@@ -37,7 +37,7 @@ function Foros({ userRol }) {
     }
     try {
       await authAxios.post('/foros', newItem);
-      setNewItem({ titulo: '', descripcion: '' }); // Limpiamos ambos campos
+      setNewItem({ titulo: '', descripcion: '' }); 
       cargarDatos();
       alert('🗣️ PROPUESTA ENVIADA. Un administrador la revisará pronto.');
     } catch (error) {
@@ -50,22 +50,19 @@ function Foros({ userRol }) {
     try {
       await authAxios.delete(`/foros/${id}`);
       cargarDatos();
-    } catch (error) {
-      alert('Error al eliminar: Privilegios insuficientes');
-    }
+    } catch (error) { alert('Error al eliminar'); }
   };
 
   const handleEstadoForo = async (id, estado) => {
     try {
       await authAxios.put(`/foros/${id}/estado`, { estado });
       cargarDatos();
-    } catch (error) {
-      alert('Error al cambiar el estado del foro');
-    }
+    } catch (error) { alert('Error al cambiar el estado del foro'); }
   };
 
+  // LE PASAMOS LA FUNCIÓN AL FORO APROBADO
   if (foroActivo) {
-      return <ForoAprobado foro={foroActivo} onBack={() => setForoActivo(null)} />;
+      return <ForoAprobado foro={foroActivo} onBack={() => setForoActivo(null)} irAPerfil={irAPerfil} />;
   }
 
   return (
@@ -77,24 +74,8 @@ function Foros({ userRol }) {
       <div className="form-section">
         <h3>PROPONER NUEVO TEMA</h3>
         <form onSubmit={handleAdd} className="form-group-column">
-          <input 
-            type="text" 
-            name="titulo" 
-            placeholder="Título del tema (Ej: ¿Cuál es su álbum favorito?)" 
-            className="form-input" 
-            value={newItem.titulo} 
-            onChange={(e) => setNewItem({ ...newItem, titulo: e.target.value })} 
-            required 
-          />
-          <textarea 
-            name="descripcion" 
-            placeholder="Escribe el contexto o tu idea principal aquí..." 
-            className="form-input" 
-            style={{ resize: 'vertical', minHeight: '80px' }}
-            value={newItem.descripcion} 
-            onChange={(e) => setNewItem({ ...newItem, descripcion: e.target.value })} 
-            required 
-          />
+          <input type="text" name="titulo" placeholder="Título del tema (Ej: ¿Cuál es su álbum favorito?)" className="form-input" value={newItem.titulo} onChange={(e) => setNewItem({ ...newItem, titulo: e.target.value })} required />
+          <textarea name="descripcion" placeholder="Escribe el contexto o tu idea principal aquí..." className="form-input" style={{ resize: 'vertical', minHeight: '80px' }} value={newItem.descripcion} onChange={(e) => setNewItem({ ...newItem, descripcion: e.target.value })} required />
           <button type="submit" className="btn-add" style={{ alignSelf: 'flex-start' }}>⚡ ENVIAR PROPUESTA</button>
         </form>
       </div>
@@ -106,36 +87,22 @@ function Foros({ userRol }) {
               <div className="item-header">
                 <div>
                   <h3 style={{ marginBottom: '5px' }}>{item.titulo}</h3>
-                  {/* Mostramos la descripción truncada o completa en la tarjeta */}
-                  <p style={{ color: '#ccc', fontStyle: 'italic', marginBottom: '10px', fontSize: '0.9em' }}>
-                    {item.descripcion}
-                  </p>
+                  <p style={{ color: '#ccc', fontStyle: 'italic', marginBottom: '10px', fontSize: '0.9em' }}>{item.descripcion}</p>
                   
                   {item.estado === 'aprobado' && (
-                    <button 
-                      className="btn-action" 
-                      style={{ background: '#333', color: '#fff', padding: '5px 15px', fontSize: '0.9em', marginTop: '10px', borderRadius: '4px', border: '1px solid var(--highlight-color)', cursor: 'pointer', fontWeight: 'bold' }}
-                      onClick={() => setForoActivo(item)}
-                    >
+                    <button className="btn-action" style={{ background: '#333', color: '#fff', padding: '5px 15px', fontSize: '0.9em', marginTop: '10px', borderRadius: '4px', border: '1px solid var(--highlight-color)', cursor: 'pointer', fontWeight: 'bold' }} onClick={() => setForoActivo(item)}>
                       💬 Entrar a la conversación
                     </button>
                   )}
                 </div>
-                
-                {userRol === 'admin' && (
-                  <div>
-                    <button type="button" className="btn-delete" onClick={() => handleDelete(item.id)}>🗑️</button>
-                  </div>
-                )}
+                {userRol === 'admin' && <button type="button" className="btn-delete" onClick={() => handleDelete(item.id)}>🗑️</button>}
               </div>
 
-              <p><strong>AUTOR:</strong> @{item.autor}</p>
+              {/* AUTOR CLICABLE DESDE LA LISTA */}
+              <p><strong>AUTOR:</strong> <span style={{ cursor: 'pointer', textDecoration: 'underline', color: 'var(--highlight-color)' }} onClick={() => irAPerfil(item.autor)}>@{item.autor}</span></p>
+              
               <p><strong>ESTADO:</strong> 
-                <span style={{
-                  marginLeft: '8px', padding: '3px 8px', borderRadius: '4px', fontSize: '0.8em',
-                  background: item.estado === 'aprobado' ? 'green' : item.estado === 'rechazado' ? 'red' : 'orange',
-                  color: 'white', fontWeight: 'bold'
-                }}>
+                <span style={{ marginLeft: '8px', padding: '3px 8px', borderRadius: '4px', fontSize: '0.8em', background: item.estado === 'aprobado' ? 'green' : item.estado === 'rechazado' ? 'red' : 'orange', color: 'white', fontWeight: 'bold' }}>
                   {item.estado?.toUpperCase() || 'PENDIENTE'}
                 </span>
               </p>

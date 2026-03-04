@@ -3,133 +3,125 @@ import axios from 'axios';
 
 const API_URL = 'http://localhost:3000/api';
 
-function Perfil() {
+function Perfil({ targetUsername, irAPerfil }) {
     const [perfilData, setPerfilData] = useState(null);
-    const [editandoDesc, setEditandoDesc] = useState(false);
-    const [nuevaDesc, setNuevaDesc] = useState('');
-
+    const [misAmigos, setMisAmigos] = useState([]);
+    const [esPrivado, setEsPrivado] = useState(false);
+    const [editandoFoto, setEditandoFoto] = useState(false);
+    const [nuevaFoto, setNuevaFoto] = useState('');
+    
+    const currentUser = localStorage.getItem('currentUser')?.toUpperCase() || '';
     const token = localStorage.getItem('token');
-    const authAxios = axios.create({
-        baseURL: API_URL,
-        headers: { Authorization: `Bearer ${token}` }
-    });
+    const authAxios = axios.create({ baseURL: API_URL, headers: { Authorization: `Bearer ${token}` } });
+
+    const esMiPerfil = !targetUsername || targetUsername.toUpperCase() === currentUser;
 
     useEffect(() => {
         cargarPerfil();
-    }, []);
+        if (esMiPerfil) cargarAmigos();
+    }, [targetUsername]);
 
     const cargarPerfil = async () => {
         try {
-            const res = await authAxios.get('/perfil');
-            setPerfilData(res.data);
-            setNuevaDesc(res.data.usuario.descripcion || '');
-        } catch (error) {
-            console.error("Error al cargar perfil", error);
-        }
+            if (esMiPerfil) {
+                const res = await authAxios.get('/perfil');
+                setPerfilData(res.data);
+                setEsPrivado(false);
+            } else {
+                const res = await authAxios.get(`/perfil/publico/${targetUsername}`);
+                setEsPrivado(res.data.privado);
+                setPerfilData(res.data);
+            }
+        } catch (error) { console.error("Error al cargar perfil", error); }
     };
 
-    const handleActualizarDesc = async (e) => {
+    const cargarAmigos = async () => {
+        try {
+            const res = await authAxios.get('/mis_amigos');
+            setMisAmigos(res.data);
+        } catch (error) { console.error("Error al cargar amigos", error); }
+    };
+
+    const handleActualizarFoto = async (e) => {
         e.preventDefault();
         try {
-            await authAxios.put('/perfil/descripcion', { descripcion: nuevaDesc });
-            setEditandoDesc(false);
+            await authAxios.put('/perfil/foto', { foto_perfil: nuevaFoto });
+            setEditandoFoto(false);
             cargarPerfil();
-            alert('💾 Descripción actualizada');
-        } catch (error) {
-            alert('Error al actualizar la descripción');
-        }
+            alert('📸 Foto actualizada');
+        } catch (error) { alert('Error al actualizar la foto'); }
     };
 
-    if (!perfilData) return <p style={{ color: 'white', padding: '20px' }}>Cargando perfil...</p>;
-
+    if (!perfilData) return <p>Cargando perfil...</p>;
     const { usuario, foros, favoritos } = perfilData;
 
     return (
         <section className="section active">
-            <div className="section-header">
-                <h2>👤 MI PERFIL</h2>
-            </div>
+            <div className="section-header"><h2>👤 PERFIL DE @{usuario.username}</h2></div>
 
-            <div className="item-card" style={{ background: '#111', borderLeft: '4px solid var(--highlight-color)', marginBottom: '30px', padding: '20px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-                    <h2 style={{ fontSize: '2.5em', margin: 0, color: 'var(--highlight-color)' }}>@{usuario.username}</h2>
-                    <span style={{ background: usuario.rol === 'admin' ? 'red' : '#333', color: 'white', padding: '5px 15px', borderRadius: '20px', fontWeight: 'bold' }}>
-                        {usuario.rol.toUpperCase()}
-                    </span>
-                </div>
+            <div className="item-card" style={{ background: '#111', borderLeft: '4px solid var(--highlight-color)', marginBottom: '30px', display: 'flex', gap: '20px', alignItems: 'center' }}>
                 
-                <p><strong>📧 CORREO:</strong> {usuario.email}</p>
-                
-                <div style={{ marginTop: '20px', background: '#0a0a0a', padding: '15px', borderRadius: '8px', border: '1px solid #333' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                        <h3 style={{ margin: 0, color: '#aaa' }}>📝 Sobre mí:</h3>
-                        {!editandoDesc && (
-                            <button onClick={() => setEditandoDesc(true)} className="btn-action" style={{ background: '#222', color: 'white', border: '1px solid #555', padding: '5px 10px', borderRadius: '4px', cursor: 'pointer' }}>
-                                ✏️ Editar
-                            </button>
-                        )}
-                    </div>
-
-                    {editandoDesc ? (
-                        <form onSubmit={handleActualizarDesc} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                            <textarea 
-                                className="form-input" 
-                                style={{ resize: 'vertical', minHeight: '80px', margin: 0 }}
-                                value={nuevaDesc} 
-                                onChange={(e) => setNuevaDesc(e.target.value)} 
-                                required 
-                            />
-                            <div style={{ display: 'flex', gap: '10px' }}>
-                                <button type="submit" className="btn-add" style={{ padding: '8px 15px', margin: 0 }}>💾 GUARDAR</button>
-                                <button type="button" onClick={() => setEditandoDesc(false)} className="btn-cancel" style={{ padding: '8px 15px', margin: 0 }}>CANCELAR</button>
-                            </div>
-                        </form>
-                    ) : (
-                        <p style={{ margin: 0, fontSize: '1.1em', lineHeight: '1.5', color: '#eee' }}>
-                            {usuario.descripcion}
-                        </p>
+                {/* SECCIÓN DE FOTO DE PERFIL */}
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                    <img src={usuario.foto_perfil || 'https://i.imgur.com/3p3E53e.png'} alt="Perfil" style={{ width: '120px', height: '120px', borderRadius: '50%', objectFit: 'cover', border: '3px solid var(--highlight-color)' }} />
+                    {esMiPerfil && !editandoFoto && (
+                        <button onClick={() => setEditandoFoto(true)} style={{ marginTop: '10px', background: '#333', color: 'white', border: 'none', padding: '5px 10px', borderRadius: '4px', cursor: 'pointer', fontSize: '0.8em' }}>Cambiar Foto</button>
                     )}
                 </div>
-            </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-                <div>
-                    <h3 style={{ borderBottom: '2px solid #333', paddingBottom: '10px', color: 'var(--highlight-color)' }}>🗣️ Mis Foros Creados</h3>
-                    <div className="items-container" style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                        {foros.length === 0 ? <p className="empty-message">No has creado ningún foro.</p> : (
-                            foros.map(foro => (
-                                <div key={foro.id} className="item-card foro-card" style={{ padding: '15px' }}>
-                                    <h4 style={{ margin: '0 0 10px 0', fontSize: '1.2em' }}>{foro.titulo}</h4>
-                                    <span style={{
-                                        padding: '3px 8px', borderRadius: '4px', fontSize: '0.8em',
-                                        background: foro.estado === 'aprobado' ? 'green' : foro.estado === 'rechazado' ? 'red' : 'orange',
-                                        color: 'white', fontWeight: 'bold'
-                                    }}>
-                                        {foro.estado.toUpperCase()}
-                                    </span>
-                                </div>
-                            ))
-                        )}
+                <div style={{ flexGrow: 1 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <h2 style={{ fontSize: '2em', color: 'var(--highlight-color)', margin: 0 }}>@{usuario.username}</h2>
                     </div>
-                </div>
-
-                <div>
-                    <h3 style={{ borderBottom: '2px solid #333', paddingBottom: '10px', color: 'var(--highlight-color)' }}>⭐ Mis Favoritos</h3>
-                    <div className="items-container" style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                        {favoritos.length === 0 ? <p className="empty-message">No tienes favoritos.</p> : (
-                            favoritos.map((fav, index) => (
-                                <div key={index} className="item-card cancion-card" style={{ padding: '15px', borderLeft: fav.tipo === 'cancion' ? '4px solid #1db954' : '4px solid #9b59b6' }}>
-                                    <h4 style={{ margin: '0 0 5px 0' }}>{fav.titulo}</h4>
-                                    <p style={{ margin: 0, color: '#aaa', fontSize: '0.8em' }}>{fav.subtitulo}</p>
-                                    <div style={{ color: '#ffd700', fontSize: '1em', marginTop: '5px' }}>
-                                        {'★'.repeat(fav.puntuacion)}
-                                    </div>
-                                </div>
-                            ))
-                        )}
-                    </div>
+                    <p style={{ color: '#888', marginTop: '5px' }}>Miembro desde: {new Date(usuario.fecha_registro).toLocaleDateString()}</p>
+                    {!esPrivado && <p style={{ fontStyle: 'italic', marginTop: '10px' }}>{usuario.descripcion}</p>}
                 </div>
             </div>
+
+            {/* FORMULARIO PARA CAMBIAR FOTO */}
+            {editandoFoto && (
+                <form onSubmit={handleActualizarFoto} style={{ display: 'flex', gap: '10px', marginBottom: '20px', background: '#0a0a0a', padding: '15px', borderRadius: '8px' }}>
+                    <input type="text" className="form-input" placeholder="URL de tu nueva foto" value={nuevaFoto} onChange={(e) => setNuevaFoto(e.target.value)} style={{ margin: 0, flexGrow: 1 }} required />
+                    <button type="submit" className="btn-add" style={{ margin: 0 }}>GUARDAR</button>
+                    <button type="button" className="btn-cancel" onClick={() => setEditandoFoto(false)} style={{ margin: 0 }}>CANCELAR</button>
+                </form>
+            )}
+
+            {esPrivado ? (
+                <div style={{ textAlign: 'center', padding: '50px', background: '#111', borderRadius: '8px' }}>
+                    <h1 style={{ fontSize: '4em', margin: 0 }}>🔒</h1>
+                    <h2>ESTA CUENTA ES PRIVADA</h2>
+                </div>
+            ) : (
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '20px' }}>
+                    <div>
+                        <h3 style={{ borderBottom: '2px solid #333' }}>🗣️ Foros Creados</h3>
+                        {foros?.length === 0 ? <p className="empty-message">No hay foros.</p> : foros?.map(f => <div key={f.id} className="item-card">{f.titulo}</div>)}
+                    </div>
+                    <div>
+                        {/* CAMBIADO A "CALIFICACIONES" */}
+                        <h3 style={{ borderBottom: '2px solid #333' }}>⭐ Calificaciones</h3>
+                        {favoritos?.length === 0 ? <p className="empty-message">No hay calificaciones altas.</p> : favoritos?.map((f,i) => (
+                            <div key={i} className="item-card">
+                                <h4 style={{ margin: '0 0 5px 0' }}>{f.titulo}</h4>
+                                <p style={{ margin: 0, color: 'gold', fontWeight: 'bold' }}>{f.puntuacion} / 5 ⭐</p>
+                            </div>
+                        ))}
+                    </div>
+                    {/* LISTA DE AMIGOS */}
+                    {esMiPerfil && (
+                        <div>
+                            <h3 style={{ borderBottom: '2px solid #333' }}>👥 Mis Amigos</h3>
+                            {misAmigos.length === 0 ? <p className="empty-message">Aún no sigues a nadie.</p> : misAmigos.map(amigo => (
+                                <div key={amigo.id} className="item-card" style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }} onClick={() => irAPerfil(amigo.username)}>
+                                    <img src={amigo.foto_perfil || 'https://i.imgur.com/3p3E53e.png'} alt="amigo" style={{ width: '30px', height: '30px', borderRadius: '50%', objectFit: 'cover' }} />
+                                    <span style={{ fontWeight: 'bold' }}>@{amigo.username}</span>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            )}
         </section>
     );
 }
