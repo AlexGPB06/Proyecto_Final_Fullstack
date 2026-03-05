@@ -12,6 +12,9 @@ function Albumes({ userRol, irAPerfil }) {
       prioridad: 'Alta' 
   });
   const [modalItem, setModalItem] = useState(null);
+  
+  // NUEVO: Estado para el filtro
+  const [filtro, setFiltro] = useState('recientes');
 
   const token = localStorage.getItem('token');
   const authAxios = axios.create({ 
@@ -19,13 +22,15 @@ function Albumes({ userRol, irAPerfil }) {
       headers: { Authorization: `Bearer ${token}` } 
   });
 
+  // NUEVO: Que se vuelva a cargar si cambia el filtro
   useEffect(() => { 
       cargarDatos(); 
-  }, []);
+  }, [filtro]);
 
+  // NUEVO: Mandar el filtro en la URL (nota que en el backend usamos /tareas para los álbumes)
   const cargarDatos = async () => {
     try { 
-        const res = await authAxios.get('/tareas'); 
+        const res = await authAxios.get(`/tareas?sort=${filtro}`); 
         setData(res.data); 
     } catch (error) {
         console.error("Error al cargar los álbumes", error);
@@ -68,8 +73,20 @@ function Albumes({ userRol, irAPerfil }) {
 
   return (
     <section className="animate-fade-in section active">
-      <div className="section-header">
+      <div className="section-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
           <h2>💿 NUESTROS ÁLBUMES</h2>
+          
+          {/* NUEVO: EL MENÚ DESPLEGABLE DE FILTROS */}
+          <select 
+              value={filtro} 
+              onChange={(e) => setFiltro(e.target.value)}
+              style={{ padding: '8px 15px', background: '#222', color: '#fff', border: '2px solid var(--highlight-color)', borderRadius: '5px', fontWeight: 'bold', outline: 'none', cursor: 'pointer' }}
+          >
+              <option value="recientes">🕒 Más Recientes</option>
+              <option value="calificacion">⭐ Mejor Calificados</option>
+              <option value="vistas">👁️ Más Vistos</option>
+              <option value="alfabetico">🔤 Alfabéticamente (A-Z)</option>
+          </select>
       </div>
 
       {userRol === 'admin' && (
@@ -122,7 +139,7 @@ function Albumes({ userRol, irAPerfil }) {
 
       <div className="items-grid">
         {data.length === 0 ? (
-            <p className="empty-message">No hay álbumes publicados aún.</p>
+            <p className="empty-message">No hay álbumes publicados aún o no coinciden con el filtro.</p>
         ) : (
             data.map((item, idx) => (
                 <div 
@@ -158,6 +175,11 @@ function Albumes({ userRol, irAPerfil }) {
                     <h3 className="card-title">{item.titulo}</h3>
                     <p className="card-subtitle" style={{ color: '#ccc', textTransform: 'none' }}>
                         {item.descripcion}
+                    </p>
+                    
+                    {/* Agregamos la visualización de calificación y vistas */}
+                    <p style={{ margin: '5px 0', fontSize: '0.9em', color: '#aaa' }}>
+                        ⭐ Promedio: {Number(item.calificacion_promedio || 0).toFixed(1)} | 👁️ Vistas: {item.vistas || 0}
                     </p>
                     
                     <div style={{ marginTop: 'auto', display: 'flex', gap: '10px', paddingTop: '15px' }}>
