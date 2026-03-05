@@ -89,12 +89,12 @@ function InteraccionesModal({ item, tipoEntidad, onClose, irAPerfil }) {
     };
 
     return (
-        <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', backgroundColor: 'rgba(0,0,0,0.85)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 9999 }}>
-            <div style={{ backgroundColor: '#111', border: '3px solid var(--highlight-color, red)', borderRadius: '8px', width: '90%', maxWidth: '600px', maxHeight: '85vh', display: 'flex', flexDirection: 'column', padding: '20px', boxShadow: '0 0 30px rgba(0,0,0,0.9)', position: 'relative' }}>
+        <div className="modal" onClick={onClose}>
+            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                 
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #333', paddingBottom: '10px', marginBottom: '15px' }}>
+                <div className="modal-header-custom">
                     <h2 style={{ margin: 0, color: '#fff', fontSize: '1.5em' }}>💬 {item.titulo || item.nombre}</h2>
-                    <button onClick={onClose} style={{ background: 'none', border: 'none', color: '#fff', fontSize: '2em', cursor: 'pointer', fontWeight: 'bold', lineHeight: '1' }}>&times;</button>
+                    <span className="close-btn" onClick={onClose}>&times;</span>
                 </div>
 
                 {tipoEntidad !== 'foro' && (
@@ -102,22 +102,18 @@ function InteraccionesModal({ item, tipoEntidad, onClose, irAPerfil }) {
                         <h3 style={{ margin: '0 0 5px 0', color: 'gold' }}>⭐ Promedio: {calificacion.promedio} <small style={{color:'#888', fontSize: '0.7em'}}>({calificacion.total} votos)</small></h3>
                         {miVoto && <p style={{ color: '#4ade80', margin: '0 0 10px 0', fontSize: '0.9em', fontWeight: 'bold' }}>Tu voto actual: {miVoto} ⭐</p>}
 
-                        <form onSubmit={handleCalificar} style={{ display: 'flex', justifyContent: 'center', gap: '10px', alignItems: 'center' }}>
-                            <input type="number" step="0.5" placeholder="Ej: 4.5" value={inputCalificacion} onChange={(e) => setInputCalificacion(e.target.value)} style={{ width: '80px', padding: '8px', backgroundColor: '#222', color: '#fff', border: '1px solid #444', borderRadius: '4px' }} required />
-                            <button type="submit" style={{ padding: '8px 15px', background: '#333', color: '#fff', border: '1px solid gold', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>
-                                {miVoto ? 'ACTUALIZAR VOTO' : 'VOTAR'}
+                        {/* QUITAMOS EL STYLE INLINE QUE ROMPÍA EL MÓVIL */}
+                        <form className="modal-form-inline" onSubmit={handleCalificar}>
+                            <input type="number" step="0.5" placeholder="Ej: 4.5" className="form-input" value={inputCalificacion} onChange={(e) => setInputCalificacion(e.target.value)} required />
+                            <button type="submit" className="btn-secondary">
+                                {miVoto ? 'ACTUALIZAR' : 'VOTAR'}
                             </button>
                         </form>
                     </div>
                 )}
 
-                <form onSubmit={handleComentar} style={{ display: 'flex', gap: '10px', marginBottom: '15px' }}>
-                    <input type="text" placeholder="Escribe tu comentario aquí..." value={nuevoComentario} onChange={(e) => setNuevoComentario(e.target.value)} style={{ flexGrow: 1, padding: '10px', backgroundColor: '#222', color: '#fff', border: '1px solid #444', borderRadius: '4px' }} required />
-                    <button type="submit" style={{ padding: '10px 15px', background: 'var(--highlight-color, red)', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>PUBLICAR</button>
-                </form>
-
-                <div style={{ flexGrow: 1, overflowY: 'auto', paddingRight: '10px' }}>
-                    {comentarios.length === 0 && <p style={{ textAlign: 'center', color: '#888', marginTop: '20px' }}>Aún no hay comentarios. ¡Sé el primero!</p>}
+                <div style={{ flexGrow: 1, overflowY: 'auto', paddingRight: '10px', marginBottom: '15px' }}>
+                    {comentarios.length === 0 && <p style={{ textAlign: 'center', color: '#888', marginTop: '20px' }}>Aún no hay opiniones. ¡Sé el primero!</p>}
                     {comentarios.map(c => {
                         const esMiComentario = c.username.toUpperCase() === currentUser;
                         const puedeBorrar = esMiComentario || userRol === 'admin';
@@ -126,30 +122,26 @@ function InteraccionesModal({ item, tipoEntidad, onClose, irAPerfil }) {
                             <div key={c.id} style={{ background: '#1a1a1a', padding: '15px', borderRadius: '6px', marginBottom: '10px', borderLeft: '4px solid #444' }}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
                                     <div>
-                                        {/* USUARIO CLICABLE PARA IR AL PERFIL */}
                                         <strong 
-                                            style={{ color: esMiComentario ? '#4ade80' : '#3b82f6', cursor: 'pointer', textDecoration: 'underline' }} 
-                                            onClick={() => { 
-                                                if(irAPerfil) irAPerfil(c.username); 
-                                                onClose(); // Cierra el modal de comentarios al navegar
-                                            }}
+                                            style={{ color: esMiComentario ? '#4ade80' : 'var(--highlight-color)', cursor: 'pointer', textDecoration: 'underline' }} 
+                                            onClick={() => { if(irAPerfil) irAPerfil(c.username); onClose(); }}
                                         >
                                             {c.username} {esMiComentario && '(Tú)'}
                                         </strong>
                                         <span style={{ fontSize: '0.8em', color: '#666', marginLeft: '10px' }}>{new Date(c.fecha_creacion).toLocaleString()}</span>
                                     </div>
-                                    <div>
-                                        {esMiComentario && editandoId !== c.id && <button onClick={() => iniciarEdicion(c)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.2em' }}>✏️</button>}
-                                        {puedeBorrar && <button onClick={() => handleBorrarComentario(c.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.2em' }}>🗑️</button>}
+                                    <div style={{ display: 'flex', gap: '5px' }}>
+                                        {esMiComentario && editandoId !== c.id && <button onClick={() => iniciarEdicion(c)} className="btn-secondary" style={{ padding: '5px 10px', fontSize: '0.8em' }}>✏️</button>}
+                                        {puedeBorrar && <button onClick={() => handleBorrarComentario(c.id)} className="btn-delete" style={{ width: '30px', height: '30px', fontSize: '1em' }}>🗑️</button>}
                                     </div>
                                 </div>
 
                                 {editandoId === c.id ? (
-                                    <div style={{ display: 'flex', gap: '10px' }}>
-                                        <input type="text" value={textoEditado} onChange={(e) => setTextoEditado(e.target.value)} style={{ flexGrow: 1, padding: '5px', backgroundColor: '#333', color: '#fff', border: '1px solid #555', borderRadius: '4px' }} />
-                                        <button onClick={() => handleGuardarEdicion(c.id)} style={{ padding: '5px 10px', background: '#4ade80', color: '#000', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>Guardar</button>
-                                        <button onClick={() => setEditandoId(null)} style={{ padding: '5px 10px', background: '#555', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>Cancelar</button>
-                                    </div>
+                                    <form className="modal-form-inline" onSubmit={(e) => { e.preventDefault(); handleGuardarEdicion(c.id); }}>
+                                        <input type="text" className="form-input" value={textoEditado} onChange={(e) => setTextoEditado(e.target.value)} />
+                                        <button type="submit" className="btn-primary">✔</button>
+                                        <button type="button" onClick={() => setEditandoId(null)} className="btn-secondary">✖</button>
+                                    </form>
                                 ) : (
                                     <p style={{ margin: 0, color: '#ccc', lineHeight: '1.4' }}>{c.comentario}</p>
                                 )}
@@ -157,6 +149,13 @@ function InteraccionesModal({ item, tipoEntidad, onClose, irAPerfil }) {
                         );
                     })}
                 </div>
+
+                {/* QUITAMOS EL STYLE INLINE QUE ROMPÍA EL MÓVIL */}
+                <form className="modal-form-inline" onSubmit={handleComentar} style={{ borderTop: '2px solid #333', paddingTop: '15px' }}>
+                    <input type="text" className="form-input" placeholder="Escribe tu opinión aquí..." value={nuevoComentario} onChange={(e) => setNuevoComentario(e.target.value)} required />
+                    <button type="submit" className="btn-primary">PUBLICAR</button>
+                </form>
+
             </div>
         </div>
     );

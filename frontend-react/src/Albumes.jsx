@@ -13,7 +13,7 @@ function Albumes({ userRol, irAPerfil }) {
   });
   const [modalItem, setModalItem] = useState(null);
   
-  // NUEVO: Estado para el filtro
+  // Estado para el filtro
   const [filtro, setFiltro] = useState('recientes');
 
   const token = localStorage.getItem('token');
@@ -22,12 +22,12 @@ function Albumes({ userRol, irAPerfil }) {
       headers: { Authorization: `Bearer ${token}` } 
   });
 
-  // NUEVO: Que se vuelva a cargar si cambia el filtro
+  // Volver a cargar si cambia el filtro
   useEffect(() => { 
       cargarDatos(); 
   }, [filtro]);
 
-  // NUEVO: Mandar el filtro en la URL (nota que en el backend usamos /tareas para los álbumes)
+  // Mandar el filtro en la URL
   const cargarDatos = async () => {
     try { 
         const res = await authAxios.get(`/tareas?sort=${filtro}`); 
@@ -72,131 +72,126 @@ function Albumes({ userRol, irAPerfil }) {
   };
 
   return (
-    <section className="animate-fade-in section active">
-      <div className="section-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
-          <h2>💿 NUESTROS ÁLBUMES</h2>
-          
-          {/* NUEVO: EL MENÚ DESPLEGABLE DE FILTROS */}
-          <select 
-              value={filtro} 
-              onChange={(e) => setFiltro(e.target.value)}
-              style={{ padding: '8px 15px', background: '#222', color: '#fff', border: '2px solid var(--highlight-color)', borderRadius: '5px', fontWeight: 'bold', outline: 'none', cursor: 'pointer' }}
-          >
-              <option value="recientes">🕒 Más Recientes</option>
-              <option value="calificacion">⭐ Mejor Calificados</option>
-              <option value="vistas">👁️ Más Vistos</option>
-              <option value="alfabetico">🔤 Alfabéticamente (A-Z)</option>
-          </select>
-      </div>
-
-      {userRol === 'admin' && (
-        <div style={{ 
-            background: 'rgba(20,20,20,0.8)', 
-            padding: '20px', 
-            borderRadius: '12px', 
-            marginBottom: '30px', 
-            border: '1px solid var(--highlight-color)' 
-        }}>
-          <h3 style={{ marginTop: 0, color: 'var(--highlight-color)' }}>
-              AGREGAR NUEVO ÁLBUM (SOLO ADMIN)
-          </h3>
-          <form 
-              onSubmit={handleAdd} 
-              style={{ 
-                  display: 'grid', 
-                  gridTemplateColumns: '1fr 2fr auto', 
-                  gap: '15px', 
-                  alignItems: 'center' 
-              }}
-          >
-            <input 
-                type="text" 
-                placeholder="Nombre del Álbum *" 
-                className="form-input" 
-                style={{ margin: 0 }} 
-                value={newItem.titulo} 
-                onChange={e => setNewItem({...newItem, titulo: e.target.value})} 
-                required 
-            />
-            <input 
-                type="text" 
-                placeholder="Descripción breve *" 
-                className="form-input" 
-                style={{ margin: 0 }} 
-                value={newItem.descripcion} 
-                onChange={e => setNewItem({...newItem, descripcion: e.target.value})} 
-                required 
-            />
-            <button 
-                type="submit" 
-                className="btn-primary" 
+    <> {/* FRAGMENTO QUE LIBERA AL MODAL DE LA ANIMACIÓN */}
+      <section className="animate-fade-in section active">
+        <div className="section-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
+            <h2>💿 NUESTROS ÁLBUMES</h2>
+            
+            {/* EL MENÚ DESPLEGABLE DE FILTROS */}
+            <select 
+                value={filtro} 
+                onChange={(e) => setFiltro(e.target.value)}
+                style={{ padding: '8px 15px', background: '#222', color: '#fff', border: '2px solid var(--highlight-color)', borderRadius: '5px', fontWeight: 'bold', outline: 'none', cursor: 'pointer' }}
             >
-                ➕ PUBLICAR ÁLBUM
-            </button>
-          </form>
+                <option value="recientes">🕒 Más Recientes</option>
+                <option value="calificacion">⭐ Mejor Calificados</option>
+                <option value="vistas">👁️ Más Vistos</option>
+                <option value="alfabetico">🔤 Alfabéticamente (A-Z)</option>
+            </select>
         </div>
-      )}
 
-      <div className="items-grid">
-        {data.length === 0 ? (
-            <p className="empty-message">No hay álbumes publicados aún o no coinciden con el filtro.</p>
-        ) : (
-            data.map((item, idx) => (
-                <div 
-                    key={item.id} 
-                    className="item-card" 
-                    style={{ animationDelay: `${idx * 0.05}s` }}
-                >
-                  <div style={{ position: 'relative' }}>
-                    {/* IMAGEN LOCAL (CON PLACEHOLDER DE RESPALDO) */}
-                    <img 
-                        src={item.imagen_url || `/img/album_${item.id}.jpg`} 
-                        onError={(e) => { 
-                            e.target.onerror = null; 
-                            e.target.src = '/img/placeholder.png'; 
-                        }}
-                        alt={`Portada de ${item.titulo}`} 
-                        className="card-image" 
-                        style={{ height: '250px' }} 
-                    />
+        {userRol === 'admin' && (
+          <div className="form-section">
+            <h3 style={{ marginTop: 0, color: 'var(--highlight-color)' }}>
+                AGREGAR NUEVO ÁLBUM (SOLO ADMIN)
+            </h3>
+            <form 
+                onSubmit={handleAdd} 
+                style={{ 
+                    display: 'grid', 
+                    gridTemplateColumns: '1fr 2fr auto', 
+                    gap: '15px', 
+                    alignItems: 'center' 
+                }}
+            >
+              <input 
+                  type="text" 
+                  placeholder="Nombre del Álbum *" 
+                  className="form-input" 
+                  style={{ margin: 0 }} 
+                  value={newItem.titulo} 
+                  onChange={e => setNewItem({...newItem, titulo: e.target.value})} 
+                  required 
+              />
+              <input 
+                  type="text" 
+                  placeholder="Descripción breve *" 
+                  className="form-input" 
+                  style={{ margin: 0 }} 
+                  value={newItem.descripcion} 
+                  onChange={e => setNewItem({...newItem, descripcion: e.target.value})} 
+                  required 
+              />
+              <button 
+                  type="submit" 
+                  className="btn-primary" 
+                  style={{ margin: 0 }}
+              >
+                  ➕ PUBLICAR
+              </button>
+            </form>
+          </div>
+        )}
+
+        <div className="items-grid">
+          {data.length === 0 ? (
+              <p className="empty-message">No hay álbumes publicados aún o no coinciden con el filtro.</p>
+          ) : (
+              data.map((item, idx) => (
+                  <div 
+                      key={item.id} 
+                      className="item-card tarea-card" 
+                      style={{ animationDelay: `${idx * 0.05}s` }}
+                  >
+                    <div style={{ position: 'relative' }}>
+                      <img 
+                          src={item.imagen_url || `/img/album_${item.id}.jpg`} 
+                          onError={(e) => { 
+                              e.target.onerror = null; 
+                              e.target.src = '/img/placeholder.png'; 
+                          }}
+                          alt={`Portada de ${item.titulo}`} 
+                          className="card-image" 
+                      />
+                      
+                      {userRol === 'admin' && (
+                          <button 
+                              className="btn-delete" 
+                              style={{ position: 'absolute', top: '10px', right: '10px', zIndex: 10 }} 
+                              onClick={() => handleDelete(item.id)}
+                          >
+                              🗑️
+                          </button>
+                      )}
+                    </div>
                     
-                    {userRol === 'admin' && (
+                    <div className="card-content">
+                      <h3 className="card-title">{item.titulo}</h3>
+                      <p className="card-subtitle" style={{ color: '#ccc' }}>
+                          {item.descripcion}
+                      </p>
+                      
+                      <p style={{ margin: '5px 0', fontSize: '0.9em', color: '#aaa', fontWeight: 'bold' }}>
+                          ⭐ {Number(item.calificacion_promedio || 0).toFixed(1)} | 👁️ {item.vistas || 0} vistas
+                      </p>
+                      
+                      <div style={{ marginTop: 'auto', display: 'flex', paddingTop: '15px' }}>
                         <button 
-                            className="btn-delete" 
-                            style={{ position: 'absolute', top: '10px', right: '10px', zIndex: 10 }} 
-                            onClick={() => handleDelete(item.id)}
+                            className="btn-primary" 
+                            style={{ width: '100%' }} 
+                            onClick={() => setModalItem(item)}
                         >
-                            🗑️
+                            ⭐ CALIFICAR / 💬 RESEÑAS
                         </button>
-                    )}
-                  </div>
-                  
-                  <div className="card-content">
-                    <h3 className="card-title">{item.titulo}</h3>
-                    <p className="card-subtitle" style={{ color: '#ccc', textTransform: 'none' }}>
-                        {item.descripcion}
-                    </p>
-                    
-                    {/* Agregamos la visualización de calificación y vistas */}
-                    <p style={{ margin: '5px 0', fontSize: '0.9em', color: '#aaa' }}>
-                        ⭐ Promedio: {Number(item.calificacion_promedio || 0).toFixed(1)} | 👁️ Vistas: {item.vistas || 0}
-                    </p>
-                    
-                    <div style={{ marginTop: 'auto', display: 'flex', gap: '10px', paddingTop: '15px' }}>
-                      <button 
-                          className="btn-primary" 
-                          style={{ flexGrow: 1 }} 
-                          onClick={() => setModalItem(item)}
-                      >
-                          ⭐ CALIFICAR / 💬 RESEÑAS
-                      </button>
+                      </div>
                     </div>
                   </div>
-                </div>
-            ))
-        )}
-      </div>
-      
+              ))
+          )}
+        </div>
+      </section>
+
+      {/* EL MODAL ESTÁ AFUERA DE LA SECCIÓN ANIMADA */}
       {modalItem && (
           <InteraccionesModal 
               item={modalItem} 
@@ -205,7 +200,7 @@ function Albumes({ userRol, irAPerfil }) {
               irAPerfil={irAPerfil} 
           />
       )}
-    </section>
+    </>
   );
 }
 
