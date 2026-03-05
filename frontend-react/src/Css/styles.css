@@ -1,33 +1,52 @@
-/* ========== VARIABLES GLOBALES ========== */
+/* =========================================================
+   PARTE 1: VARIABLES, FUENTES Y LOGIN
+   ========================================================= */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,600;0,800;1,400&display=swap');
+
 :root {
     --highlight-color: #ff0000;
+    --highlight-hover: #cc0000;
     --text-color: #ffffff;
     --text-muted: #cccccc;
-    --success-color: #ff6600;
+    --success-color: #4ade80;
     --warning-color: #ffff00;
     --danger-color: #ff0000;
     --shadow: 0 8px 32px rgba(255, 0, 0, 0.4);
-    --transition: all 0.3s ease;
+    --transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Transición elástica y profesional */
+    --neon-glow: 0 0 15px rgba(255, 0, 0, 0.5);
 }
 
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    font-family: 'Poppins', sans-serif; /* Poppins como base para legibilidad */
+}
+
+/* Forzar minúsculas y buena lectura en textos largos */
+p, span, div, input, textarea {
+    text-transform: none !important; 
+    letter-spacing: normal;
+    line-height: 1.6; 
+}
+
+/* Títulos con tipografía ruda e Impact */
+h1, h2, h3, h4, .btn-primary, .navbar-title, .menu-btn, .btn-add, .btn-login {
+    font-family: 'Impact', 'Arial Black', sans-serif !important;
+    text-transform: uppercase !important;
+    font-weight: 800;
+    letter-spacing: 1px;
 }
 
 html, body {
     width: 100%;
     min-height: 100vh;
-    font-family: 'Impact', 'Arial Black', sans-serif;
     background: linear-gradient(rgba(0, 0, 0, 0.92), rgba(0, 0, 0, 0.92)), url('/img/PDG.jpeg') center/cover no-repeat fixed;
     color: var(--text-color);
-    line-height: 1.6;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+    overflow-x: hidden;
 }
 
-/* ========== LOGIN Y REGISTRO ========== */
+/* ========== LOGIN Y REGISTRO DINÁMICO ========== */
 .login-container {
     min-height: 100vh;
     display: flex;
@@ -36,36 +55,31 @@ html, body {
     padding: 20px;
     background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
     position: relative;
+    overflow: hidden;
 }
 
+/* Efecto de TV antigua/Scanlines con movimiento */
 .login-container::before {
     content: '';
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    top: -100%; left: 0; right: 0; bottom: -100%;
     background: repeating-linear-gradient(0deg, rgba(255, 0, 0, 0.05) 0px, rgba(255, 0, 0, 0.05) 2px, transparent 2px, transparent 4px);
     pointer-events: none;
+    animation: scanlinesMove 10s linear infinite;
 }
 
 .login-card, .register-card {
     width: 100%;
     max-width: 450px;
     padding: 50px 40px;
-    background: rgba(0, 0, 0, 0.95);
+    background: rgba(0, 0, 0, 0.85);
     backdrop-filter: blur(10px);
     border: 3px solid var(--highlight-color);
     border-radius: 0px;
-    box-shadow: var(--shadow), inset 0 0 20px rgba(255, 0, 0, 0.3);
-    animation: slideIn 0.5s ease;
+    box-shadow: 10px 10px 0px #000, inset 0 0 20px rgba(255, 0, 0, 0.2);
+    animation: slideIn 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
     position: relative;
     z-index: 1;
-}
-
-@keyframes slideIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
 }
 
 .login-header {
@@ -80,7 +94,7 @@ html, body {
     margin-bottom: 10px;
     color: var(--highlight-color);
     text-shadow: 3px 3px 0px #000000, 6px 6px 0px rgba(255, 0, 0, 0.5);
-    font-weight: 900;
+    animation: pulseText 2s infinite;
 }
 
 .login-header img {
@@ -90,9 +104,13 @@ html, body {
     border: 3px solid var(--highlight-color);
     margin-bottom: 15px;
     display: block;
-    margin-left: auto;
-    margin-right: auto;
-    box-shadow: 0 0 20px rgba(255, 0, 0, 0.6);
+    margin-left: auto; margin-right: auto;
+    box-shadow: var(--neon-glow);
+    transition: transform 0.5s ease;
+}
+
+.login-card:hover .login-header img {
+    transform: rotate(10deg) scale(1.05);
 }
 
 .tagline {
@@ -102,9 +120,7 @@ html, body {
     font-weight: 700;
 }
 
-.form-group {
-    margin-bottom: 25px;
-}
+.form-group { margin-bottom: 25px; }
 
 .form-group label {
     display: block;
@@ -115,7 +131,7 @@ html, body {
     letter-spacing: 1px;
 }
 
-.form-group input {
+.form-input, .form-select, .form-group input {
     width: 100%;
     padding: 12px 15px;
     background: rgba(255, 255, 255, 0.05);
@@ -124,18 +140,14 @@ html, body {
     color: var(--text-color);
     font-size: 0.95em;
     transition: var(--transition);
-    text-transform: uppercase;
 }
 
-.form-group input:focus {
+.form-input:focus, .form-select:focus, .form-group input:focus {
     outline: none;
     border-color: var(--highlight-color);
     background: rgba(255, 0, 0, 0.1);
-    box-shadow: 0 0 20px rgba(255, 0, 0, 0.6), inset 0 0 10px rgba(255, 0, 0, 0.1);
-}
-
-.login-form {
-    margin-bottom: 30px;
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.4), inset 0 0 10px rgba(255, 0, 0, 0.1);
+    transform: translateX(5px); /* Pequeño salto al enfocar */
 }
 
 .btn-login {
@@ -145,30 +157,29 @@ html, body {
     color: #000000;
     border: 3px solid #000000;
     border-radius: 0px;
-    font-size: 1em;
-    font-weight: 900;
+    font-size: 1.2em;
     cursor: pointer;
     transition: var(--transition);
     margin-top: 10px;
-    text-transform: uppercase;
     letter-spacing: 2px;
-    box-shadow: 4px 4px 0px #000000;
+    box-shadow: 5px 5px 0px #000000;
 }
 
 .btn-login:hover {
-    transform: translate(2px, 2px);
-    box-shadow: 2px 2px 0px #000000;
+    transform: translate(-3px, -3px);
+    box-shadow: 8px 8px 0px #000000, var(--neon-glow);
     background: #ff3333;
 }
 
 .btn-login:active {
-    transform: translate(4px, 4px);
-    box-shadow: 0px 0px 0px #000000;
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0px #000000;
 }
 
 .login-footer {
     text-align: center;
     font-size: 0.9em;
+    margin-top: 20px;
 }
 
 .login-footer a {
@@ -183,29 +194,18 @@ html, body {
     color: #ff3333;
     text-decoration: underline wavy;
     text-decoration-thickness: 3px;
+    letter-spacing: 1px;
 }
 
-.error-message {
-    display: none;
-    color: #000000;
-    background: var(--danger-color);
-    border: 3px solid #000000;
-    padding: 12px 15px;
-    border-radius: 0px;
-    margin-top: 15px;
-    font-size: 0.9em;
-    text-align: center;
-    font-weight: 700;
-    text-transform: uppercase;
-    box-shadow: 3px 3px 0px #000000;
-}
+/* =========================================================
+   PARTE 2: LAYOUT, NAVBAR, SIDEBAR Y BOTONES GLOBALES
+   ========================================================= */
 
-/* ========== PÁGINA PRINCIPAL ========== */
 .navbar {
     background: linear-gradient(90deg, #000000, #1a1a1a);
     border-bottom: 4px solid var(--highlight-color);
     padding: 15px 0;
-    box-shadow: var(--shadow);
+    box-shadow: 0 4px 15px rgba(255,0,0,0.3);
     position: sticky;
     top: 0;
     z-index: 100;
@@ -221,10 +221,14 @@ html, body {
 }
 
 .navbar-title {
-    font-size: 2em;
+    font-size: 2.2em;
     color: var(--highlight-color);
-    text-shadow: 3px 3px 0px #000000;
-    font-weight: 900;
+    text-shadow: 3px 3px 0px #000000, 0 0 10px rgba(255,0,0,0.4);
+    transition: transform 0.3s ease;
+}
+
+.navbar-title:hover {
+    transform: scale(1.05) rotate(-2deg);
 }
 
 .navbar-user {
@@ -243,21 +247,17 @@ html, body {
 .btn-logout {
     padding: 8px 18px;
     background: var(--highlight-color);
-    border: 2px solid #000000;
-    color: #000000;
-    border-radius: 0px;
+    border: 3px solid #000000;
+    color: #fff;
     cursor: pointer;
     transition: var(--transition);
-    font-weight: 800;
-    text-transform: uppercase;
-    font-size: 0.85em;
-    box-shadow: 2px 2px 0px #000000;
+    box-shadow: 3px 3px 0px #000000;
 }
 
 .btn-logout:hover {
     background: #ff3333;
-    transform: translate(1px, 1px);
-    box-shadow: 1px 1px 0px #000000;
+    transform: translate(-2px, -2px);
+    box-shadow: 5px 5px 0px #000000;
 }
 
 .main-container {
@@ -272,14 +272,14 @@ html, body {
 
 /* ========== SIDEBAR ========== */
 .sidebar {
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
     border: 3px solid var(--highlight-color);
-    border-radius: 0px;
     padding: 20px;
     height: fit-content;
     position: sticky;
     top: 80px;
-    box-shadow: var(--shadow);
+    box-shadow: 8px 8px 0px rgba(0,0,0,0.9);
 }
 
 .sidebar-menu {
@@ -290,547 +290,247 @@ html, body {
 
 .menu-btn {
     padding: 12px 15px;
-    background: rgba(255, 0, 0, 0.1);
-    border: 2px solid var(--highlight-color);
-    color: var(--highlight-color);
-    border-radius: 0px;
+    background: transparent;
+    border: 2px solid transparent;
+    color: #fff;
     cursor: pointer;
     transition: var(--transition);
     text-align: left;
-    font-size: 0.95em;
-    font-weight: 800;
-    text-transform: uppercase;
+    font-size: 1.1em;
 }
 
 .menu-btn:hover {
-    background: rgba(255, 0, 0, 0.3);
-    transform: translate(2px, 0);
-    box-shadow: 2px 0 0 var(--highlight-color);
+    background: rgba(255, 0, 0, 0.1);
+    transform: translateX(8px);
+    border-left: 4px solid var(--highlight-color);
+    text-shadow: 0 0 5px var(--highlight-color);
 }
 
 .menu-btn.active {
     background: var(--highlight-color);
     color: #000000;
-    font-weight: 900;
-    box-shadow: 3px 3px 0px #000000;
+    border: 3px solid #000;
+    box-shadow: 4px 4px 0px #000000;
 }
 
-/* ========== CONTENIDO PRINCIPAL ========== */
+/* ========== CONTENIDO Y BOTONES ACCIÓN ========== */
 .content {
     padding: 20px;
 }
 
 .section {
     display: none;
-    animation: fadeIn 0.3s ease;
 }
 
 .section.active {
     display: block;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    animation: fadeInUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 }
 
 .section-header {
     margin-bottom: 30px;
-    padding-bottom: 20px;
-    border-bottom: 3px solid var(--highlight-color);
+    padding-bottom: 10px;
+    border-bottom: 4px solid var(--highlight-color);
 }
 
 .section-header h2 {
-    font-size: 2em;
+    font-size: 2.2em;
     color: var(--highlight-color);
-    text-transform: uppercase;
-    text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.5);
-    font-weight: 900;
+    text-shadow: 3px 3px 0px rgba(0, 0, 0, 0.9);
 }
 
-.form-section {
-    background: rgba(0, 0, 0, 0.8);
-    border: 2px solid var(--highlight-color);
-    border-radius: 0px;
-    padding: 25px;
-    margin-bottom: 30px;
-    box-shadow: var(--shadow);
-}
-
-.form-section h3 {
-    margin-bottom: 20px;
-    color: var(--highlight-color);
-    font-size: 1.1em;
-    text-transform: uppercase;
-    font-weight: 800;
-}
-
-.form-group-row {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 15px;
-    margin-bottom: 15px;
-}
-
-.form-input, .form-select {
-    padding: 12px 15px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 2px solid #333333;
-    border-radius: 0px;
-    color: var(--text-color);
-    font-size: 0.95em;
-    transition: var(--transition);
-    text-transform: uppercase;
-}
-
-.form-input:focus, .form-select:focus {
-    outline: none;
-    border-color: var(--highlight-color);
-    background: rgba(255, 0, 0, 0.1);
-    box-shadow: 0 0 20px rgba(255, 0, 0, 0.6);
-}
-
-.form-input::placeholder {
-    color: var(--text-muted);
-}
-
-.btn-add {
+.btn-add, .btn-primary {
     padding: 12px 25px;
     background: var(--highlight-color);
-    color: #000000;
+    color: #fff;
     border: 3px solid #000000;
-    border-radius: 0px;
     cursor: pointer;
-    font-weight: 900;
     transition: var(--transition);
-    align-self: center;
-    text-transform: uppercase;
-    font-size: 0.9em;
-    letter-spacing: 1px;
-    box-shadow: 3px 3px 0px #000000;
+    box-shadow: 4px 4px 0px #000000;
 }
 
-.btn-add:hover {
-    transform: translate(2px, 2px);
-    box-shadow: 1px 1px 0px #000000;
+.btn-add:hover, .btn-primary:hover {
+    transform: translate(-3px, -3px);
+    box-shadow: 7px 7px 0px #000000, 0 0 15px rgba(255,0,0,0.5);
     background: #ff3333;
 }
 
-/* ========== CONTENEDOR DE ELEMENTOS ========== */
-.items-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-    gap: 20px;
-}
-
-.item-card {
-    background: rgba(0, 0, 0, 0.8);
-    border: 3px solid var(--highlight-color);
-    border-radius: 0px;
-    padding: 20px;
-    transition: var(--transition);
-    box-shadow: var(--shadow);
-}
-
-.item-card:hover {
-    border-color: #ff3333;
-    box-shadow: 0 0 30px rgba(255, 0, 0, 0.8), inset 0 0 20px rgba(255, 0, 0, 0.2);
-    transform: translate(-3px, -3px);
-}
-
-.item-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-}
-
-.item-header h3 {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin: 0;
-    font-size: 1.1em;
-    color: var(--text-color);
-    text-transform: uppercase;
-}
-
-.item-header input[type="checkbox"] {
-    width: 20px;
-    height: 20px;
-    cursor: pointer;
-}
-
 .btn-delete {
-    background: none;
-    border: none;
-    color: var(--highlight-color);
-    font-size: 1.2em;
+    background: rgba(255, 0, 0, 0.9);
+    border: 2px solid #000;
+    color: #fff;
+    width: 35px; height: 35px;
+    border-radius: 50%;
     cursor: pointer;
     transition: var(--transition);
-    padding: 5px;
+    display: flex; justify-content: center; align-items: center;
 }
 
 .btn-delete:hover {
-    transform: scale(1.4) rotate(10deg);
-    color: #ff3333;
+    transform: scale(1.3) rotate(15deg);
+    box-shadow: 0 0 15px #ff0000;
+    background: #ff0000;
 }
 
-.item-card p {
-    color: var(--text-muted);
-    margin: 10px 0;
-    font-size: 0.95em;
-}
-
-.item-card small {
-    color: var(--text-muted);
-    font-size: 0.85em;
-    display: block;
-    margin-top: 10px;
-}
-
-.cancion-card {
-    border-left: 6px solid #3b82f6 !important;
-    border-top: 3px solid var(--highlight-color);
-}
-
-.usuario-card {
-    border-left: 6px solid #8b5cf6 !important;
-    border-top: 3px solid var(--highlight-color);
-}
-
-.tarea-card {
-    border-left: 6px solid #ec4899 !important;
-    border-top: 3px solid var(--highlight-color);
-}
-
-.tarea-card.completada {
-    opacity: 0.6;
-    background: rgba(0, 0, 0, 0.6);
-}
-
-.tarea-card.completada h3 {
-    text-decoration: line-through;
-    color: var(--text-muted);
-}
-
-.tarea-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 15px;
-    padding-top: 15px;
-    border-top: 2px solid var(--highlight-color);
-}
-
-.prioridad-baja {
-    color: var(--success-color);
-    font-weight: 700;
-}
-
-.prioridad-media {
-    color: var(--warning-color);
-    font-weight: 700;
-}
-
-.prioridad-alta {
-    color: var(--danger-color);
-    font-weight: 700;
-}
-
-.evento-card {
-    border-left: 6px solid #f59e0b !important;
-    border-top: 3px solid var(--highlight-color);
-}
-
-.foro-card {
-    border-left: 6px solid #00e5ff !important;
-    border-top: 3px solid var(--highlight-color);
-    background: linear-gradient(to right, rgba(0, 20, 30, 0.95), rgba(0, 0, 0, 0.9));
-}
-
-.foro-card h3 {
-    color: #00e5ff !important;
-}
-
-.foro-card small {
-    color: #aaa;
-}
-
-.empty-message {
-    grid-column: 1 / -1;
-    text-align: center;
-    padding: 60px 20px;
-    color: var(--text-muted);
-    font-size: 1.1em;
-    text-transform: uppercase;
-}
-
-/* ========== RESPONSIVE ========== */
-@media (max-width: 1024px) {
-    .main-container {
-        grid-template-columns: 1fr;
-        gap: 20px;
-        padding: 20px;
-    }
-    .sidebar {
-        position: static;
-    }
-}
-
-@media (max-width: 768px) {
-    .main-container {
-        grid-template-columns: 1fr;
-        padding: 15px;
-    }
-    .sidebar {
-        position: static;
-        margin-bottom: 20px;
-    }
-    .sidebar-menu {
-        flex-direction: row;
-        flex-wrap: wrap;
-    }
-    .menu-btn {
-        flex: 1;
-        min-width: 100px;
-        font-size: 0.8em;
-    }
-    .items-container {
-        grid-template-columns: 1fr;
-    }
-    .form-group-row {
-        grid-template-columns: 1fr;
-    }
-    .navbar-content {
-        flex-direction: column;
-        gap: 10px;
-    }
-    .login-card, .register-card {
-        max-width: 100%;
-        padding: 30px 20px;
-    }
-    .login-header h1 {
-        font-size: 2.2em;
-    }
-    .login-header img {
-        width: 100px;
-        height: 100px;
-    }
-}
-
-@media (max-width: 480px) {
-    .login-header h1 {
-        font-size: 1.8em;
-    }
-    .login-header img {
-        width: 80px;
-        height: 80px;
-    }
-    .section-header h2 {
-        font-size: 1.3em;
-    }
-    .navbar-title {
-        font-size: 1.2em;
-    }
-    .navbar-user {
-        flex-direction: column;
-        gap: 10px;
-        align-items: flex-start;
-    }
-    .navbar-user span {
-        font-size: 0.8em;
-    }
-    body {
-        font-size: 14px;
-    }
-    .form-group-row {
-        gap: 8px;
-    }
-    .btn-add {
-        grid-column: 1 / -1;
-    }
-}
-
-/* ========== MODAL DE EDICIÓN (AGREGADO NUEVO) ========== */
-.modal {
-    display: none; position: fixed; z-index: 1000; left: 0; top: 0;
-    width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); backdrop-filter: blur(5px);
-}
-.modal-content {
-    background: #1a1a1a; border: 3px solid var(--warning-color);
-    margin: 10% auto; padding: 20px; width: 90%; max-width: 500px;
-    box-shadow: 0 0 30px rgba(255, 255, 0, 0.3); animation: slideInModal 0.3s;
-}
-
-@keyframes slideInModal { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
-
-.modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--warning-color); margin-bottom: 20px; padding-bottom: 10px; }
-.modal-header h2 { color: var(--warning-color); margin: 0; }
-.close-btn { color: #fff; font-size: 28px; cursor: pointer; }
-.close-btn:hover { color: var(--warning-color); }
-
-.modal-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
-.form-group-column { display: flex; flex-direction: column; gap: 15px; }
-
-/* Botones del Modal */
-.btn-edit { background: none; border: none; color: var(--warning-color); font-size: 1.2em; cursor: pointer; margin-right: 10px; transition: var(--transition); }
-.btn-edit:hover { transform: scale(1.2); text-shadow: 0 0 10px var(--warning-color); }
-
-.btn-save { padding: 10px 20px; background: var(--warning-color); color: #000; border: 2px solid #000; font-weight: bold; cursor: pointer; text-transform: uppercase; }
-.btn-cancel { padding: 10px 20px; background: #333; color: #fff; border: 2px solid #000; font-weight: bold; cursor: pointer; text-transform: uppercase; }
-/* =========================================
-   NUEVOS ESTILOS: ANIMACIONES, GRID Y CARDS
-   ========================================= */
-
-/* Animación de entrada suave */
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-.animate-fade-in { 
-  animation: fadeInUp 0.5s ease-out forwards; 
-}
-
-/* Rejilla para Canciones, Álbumes y Quiénes Somos */
-.items-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 25px;
-}
-
-/* Modernización de las tarjetas (Cards) con efecto "Hover" */
-.item-card {
-  transition: all 0.3s ease;
-  display: flex; 
-  flex-direction: column;
-  overflow: hidden;
-  backdrop-filter: blur(5px);
-}
-.item-card:hover {
-  transform: translateY(-8px) scale(1.02);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5), 0 0 15px rgba(230, 0, 18, 0.3);
-  border-color: var(--highlight-color, red);
-}
-
-/* Estilos internos de la tarjeta para que la imagen se vea bien */
-.card-image {
-  width: 100%; 
-  height: 200px; 
-  object-fit: cover;
-  border-bottom: 2px solid var(--highlight-color, red);
-  transition: transform 0.5s ease;
-}
-.item-card:hover .card-image { 
-  transform: scale(1.05); 
-}
-.card-content { 
-  padding: 20px; 
-  flex-grow: 1; 
-  display: flex; 
-  flex-direction: column; 
-}
-.card-title { 
-  margin: 0 0 10px 0; 
-  font-size: 1.4em; 
-  color: #fff; 
-}
-.card-subtitle { 
-  margin: 0 0 15px 0; 
-  color: #aaa; 
-  font-size: 0.9em; 
-  text-transform: uppercase; 
-  letter-spacing: 1px; 
-}
-
-/* Nuevos Botones Estilizados */
-.btn-primary {
-  background: var(--highlight-color, red); 
-  color: #fff; 
-  border: none;
-  padding: 10px 20px; 
-  border-radius: 25px; 
-  font-weight: bold; 
-  cursor: pointer;
-  transition: all 0.3s; 
-  text-transform: uppercase; 
-  font-size: 0.85em;
-}
-.btn-primary:hover { 
-  filter: brightness(1.2);
-  box-shadow: 0 0 10px var(--highlight-color, red); 
-  transform: scale(1.05); 
-}
-
-.btn-secondary {
-  background: transparent; 
-  color: #fff; 
-  border: 1px solid var(--highlight-color, red);
-  padding: 8px 15px; 
-  border-radius: 25px; 
-  cursor: pointer; 
-  transition: all 0.3s;
-}
-.btn-secondary:hover { 
-  background: rgba(255,255,255,0.1); 
-  border-color: #fff; 
-}
 /* =========================================================
-   NUEVOS ESTILOS AGREGADOS (PEGAR AL FINAL DEL ARCHIVO)
+   PARTE 3: TARJETAS (GRID), MODALES Y ANIMACIONES CLAVE
    ========================================================= */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,600;0,800;1,400&display=swap');
 
-* { font-family: 'Poppins', sans-serif; }
-
-/* Forzar minúsculas en párrafos y textos largos */
-p, span, div, input, textarea {
-  text-transform: none !important; 
-  letter-spacing: normal;
-  line-height: 1.6; 
-}
-
-/* Mantener títulos rockeros */
-h1, h2, h3, h4, .btn-primary, .navbar-title, .menu-btn {
-  text-transform: uppercase !important;
-  font-weight: 800;
-}
-
-/* Animaciones */
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-.animate-fade-in { animation: fadeInUp 0.5s ease-out forwards; }
-
-/* Rejilla de Tarjetas (Grid) */
 .items-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 25px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 25px;
 }
 
-/* Tarjetas (Cards) 3D */
 .item-card {
-  background: rgba(25, 25, 25, 0.6);
-  background: rgba(10, 10, 10, 0.9);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  overflow: hidden;
-  transition: all 0.3s ease;
-  backdrop-filter: blur(5px);
-  display: flex; flex-direction: column;
+    background: rgba(10, 10, 10, 0.9);
+    border: 3px solid var(--highlight-color);
+    border-radius: 0px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: var(--transition);
+    box-shadow: 6px 6px 0px rgba(0,0,0,0.8);
+    backdrop-filter: blur(5px);
+    opacity: 0;
+    animation: fadeInUp 0.6s ease-out forwards;
 }
+
 .item-card:hover {
-  transform: translateY(-8px) scale(1.02);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5), 0 0 15px rgba(230, 0, 18, 0.3);
-  border-color: var(--highlight-color, red);
+    transform: translateY(-10px) scale(1.02);
+    box-shadow: 12px 12px 0px rgba(0,0,0,0.9), var(--neon-glow);
+    border-color: #ff3333;
 }
+
 .card-image {
-  width: 100%; height: 200px; object-fit: cover;
-  border-bottom: 2px solid var(--highlight-color, red);
-  transition: transform 0.5s ease;
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    border-bottom: 3px solid var(--highlight-color);
+    transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
 }
-.item-card:hover .card-image { transform: scale(1.05); }
-.card-content { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; }
-.card-title { margin: 0 0 10px 0; font-size: 1.4em; color: #fff; text-transform: uppercase; font-weight: 800; }
-.card-subtitle { margin: 0 0 15px 0; color: #aaa; font-size: 0.9em; text-transform: none !important; }
+
+.item-card:hover .card-image {
+    transform: scale(1.08) rotate(1deg);
+}
+
+.card-content {
+    padding: 20px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.card-title {
+    font-size: 1.4em;
+    color: #fff;
+    margin-bottom: 5px;
+}
+
+.card-subtitle {
+    color: #aaa;
+    margin-bottom: 15px;
+    font-size: 0.9em;
+}
+
+/* Colores específicos por tarjeta (Bordes rockeros) */
+.cancion-card { border-left: 8px solid #3b82f6 !important; }
+.usuario-card { border-left: 8px solid #8b5cf6 !important; }
+.tarea-card   { border-left: 8px solid #ec4899 !important; }
+.evento-card  { border-left: 8px solid #f59e0b !important; }
+.foro-card    { border-left: 8px solid #00e5ff !important; }
+
+/* ========== MODAL CENTRADO PERFECTO ========== */
+.modal {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    background-color: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(6px);
+    z-index: 9999;
+    
+    /* Flexbox para centrado geométrico perfecto */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: #111;
+    padding: 30px;
+    border: 4px solid var(--highlight-color);
+    width: 90%;
+    max-width: 600px;
+    max-height: 85vh; /* Evita que se salga de la pantalla */
+    overflow-y: auto; /* Agrega scroll interno si hay muchos comentarios */
+    position: relative;
+    box-shadow: 15px 15px 0px rgba(0,0,0,0.9), 0 0 30px rgba(255,0,0,0.2);
+    animation: modalPopIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+.close-btn {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 2em;
+    color: #aaa;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.close-btn:hover {
+    color: var(--highlight-color);
+    transform: scale(1.3) rotate(90deg);
+}
+
+/* ========== KEYFRAMES (ANIMACIONES DINÁMICAS) ========== */
+
+/* Movimiento de la TV Antigua en Login */
+@keyframes scanlinesMove {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(50%); }
+}
+
+/* Rebote sutil de entrada (Cards y Secciones) */
+@keyframes fadeInUp {
+    0% { opacity: 0; transform: translateY(40px) scale(0.95); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Entrada del Login (Slide In) */
+@keyframes slideIn {
+    0% { opacity: 0; transform: translateY(-50px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Explosión (Pop-in) para los Modales */
+@keyframes modalPopIn {
+    0% { opacity: 0; transform: scale(0.8) translateY(30px); }
+    100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* Pulso de luz para los Títulos Principales */
+@keyframes pulseText {
+    0% { text-shadow: 3px 3px 0px #000, 0 0 5px rgba(255,0,0,0.3); }
+    50% { text-shadow: 3px 3px 0px #000, 0 0 20px rgba(255,0,0,0.8); }
+    100% { text-shadow: 3px 3px 0px #000, 0 0 5px rgba(255,0,0,0.3); }
+}
+
+/* Movimiento Panorámico para Banners (Usa className="animated-banner" en React) */
+.animated-banner {
+    animation: panBanner 25s linear infinite alternate;
+}
+
+@keyframes panBanner {
+    0% { background-position: 0% 50%; background-size: 105%; }
+    100% { background-position: 100% 50%; background-size: 115%; }
+}
+
+/* ========== RESPONSIVE BÁSICO ========== */
+@media (max-width: 1024px) {
+    .main-container { grid-template-columns: 1fr; }
+    .sidebar { position: static; margin-bottom: 20px; }
+}
+@media (max-width: 768px) {
+    .sidebar-menu { flex-direction: row; flex-wrap: wrap; }
+    .menu-btn { flex: 1; min-width: 120px; text-align: center; }
+    .login-card { padding: 30px 20px; }
+}

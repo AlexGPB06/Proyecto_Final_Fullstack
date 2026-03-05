@@ -4,115 +4,108 @@ import ForoAprobado from './ForoAprobado';
 
 const API_URL = 'http://localhost:3000/api';
 
-// RECIBIMOS LA FUNCIÓN AQUÍ
 function Foros({ userRol, irAPerfil }) {
   const [data, setData] = useState([]);
   const [newItem, setNewItem] = useState({ titulo: '', descripcion: '' }); 
   const [foroActivo, setForoActivo] = useState(null); 
 
   const token = localStorage.getItem('token');
-  const authAxios = axios.create({
-    baseURL: API_URL,
-    headers: { Authorization: `Bearer ${token}` }
-  });
+  const authAxios = axios.create({ baseURL: API_URL, headers: { Authorization: `Bearer ${token}` } });
 
-  useEffect(() => {
-    cargarDatos();
-  }, []);
+  useEffect(() => { cargarDatos(); }, []);
 
   const cargarDatos = async () => {
     try {
       const res = await authAxios.get('/foros');
       setData(res.data);
-    } catch (error) {
-      console.error("Error cargando foros", error);
-    }
+    } catch (error) { console.error("Error cargando foros", error); }
   };
 
   const handleAdd = async (e) => {
     e.preventDefault();
-    if (!newItem.titulo.trim() || !newItem.descripcion.trim()) {
-        alert("Por favor llena el título y la descripción.");
-        return;
-    }
+    if (!newItem.titulo.trim() || !newItem.descripcion.trim()) { alert("Llena el título y la descripción."); return; }
     try {
       await authAxios.post('/foros', newItem);
       setNewItem({ titulo: '', descripcion: '' }); 
       cargarDatos();
-      alert('🗣️ PROPUESTA ENVIADA. Un administrador la revisará pronto.');
-    } catch (error) {
-      alert('Error al enviar propuesta: ' + (error.response?.data?.message || error.message));
-    }
+      alert('🗣️ PROPUESTA ENVIADA. Un administrador la revisará.');
+    } catch (error) { alert('Error al enviar propuesta.'); }
   };
 
   const handleDelete = async (id) => {
     if (!window.confirm('¿ELIMINAR ESTE TEMA DEL FORO?')) return;
-    try {
-      await authAxios.delete(`/foros/${id}`);
-      cargarDatos();
-    } catch (error) { alert('Error al eliminar'); }
+    try { await authAxios.delete(`/foros/${id}`); cargarDatos(); } catch (error) {}
   };
 
   const handleEstadoForo = async (id, estado) => {
-    try {
-      await authAxios.put(`/foros/${id}/estado`, { estado });
-      cargarDatos();
-    } catch (error) { alert('Error al cambiar el estado del foro'); }
+    try { await authAxios.put(`/foros/${id}/estado`, { estado }); cargarDatos(); } catch (error) {}
   };
 
-  // LE PASAMOS LA FUNCIÓN AL FORO APROBADO
   if (foroActivo) {
       return <ForoAprobado foro={foroActivo} onBack={() => setForoActivo(null)} irAPerfil={irAPerfil} />;
   }
 
   return (
-    <section className="section active">
+    <section className="animate-fade-in section active">
       <div className="section-header">
-        <h2>🗣️ FORO DE DISCUSIÓN</h2>
+        <h2>🗣️ COMUNIDAD Y FOROS</h2>
       </div>
 
-      <div className="form-section">
-        <h3>PROPONER NUEVO TEMA</h3>
-        <form onSubmit={handleAdd} className="form-group-column">
-          <input type="text" name="titulo" placeholder="Título del tema (Ej: ¿Cuál es su álbum favorito?)" className="form-input" value={newItem.titulo} onChange={(e) => setNewItem({ ...newItem, titulo: e.target.value })} required />
-          <textarea name="descripcion" placeholder="Escribe el contexto o tu idea principal aquí..." className="form-input" style={{ resize: 'vertical', minHeight: '80px' }} value={newItem.descripcion} onChange={(e) => setNewItem({ ...newItem, descripcion: e.target.value })} required />
-          <button type="submit" className="btn-add" style={{ alignSelf: 'flex-start' }}>⚡ ENVIAR PROPUESTA</button>
+      {/* PANEL DE CREACIÓN DESTACADO */}
+      <div className="form-section" style={{ background: 'linear-gradient(135deg, rgba(20,0,0,0.8), rgba(0,0,0,0.9))', border: '2px solid var(--highlight-color)', boxShadow: '0 0 20px rgba(255,0,0,0.1)' }}>
+        <h3 style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>🎙️ INICIAR UNA NUEVA DISCUSIÓN</h3>
+        <p style={{ color: '#aaa', marginBottom: '20px', fontSize: '0.9em' }}>Propón un tema. Los administradores lo aprobarán para mantener la comunidad libre de spam.</p>
+        <form onSubmit={handleAdd} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+          <input type="text" placeholder="Ej: ¿Qué opinan del solo de guitarra en la nueva canción?" className="form-input" value={newItem.titulo} onChange={(e) => setNewItem({ ...newItem, titulo: e.target.value })} required />
+          <textarea placeholder="Escribe el contexto, tu opinión o de qué trata este hilo..." className="form-input" style={{ resize: 'vertical', minHeight: '80px' }} value={newItem.descripcion} onChange={(e) => setNewItem({ ...newItem, descripcion: e.target.value })} required />
+          <button type="submit" className="btn-primary" style={{ alignSelf: 'flex-start' }}>⚡ PROPONER TEMA</button>
         </form>
       </div>
 
-      <div className="items-container">
-        {data.length === 0 ? <p className="empty-message">No hay temas aún.</p> : (
+      {/* LISTA DE FOROS (ESTILO HILOS) */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', marginTop: '30px' }}>
+        {data.length === 0 ? <p className="empty-message">No hay temas en discusión aún.</p> : (
           data.map((item) => (
-            <div key={item.id} className="item-card foro-card">
-              <div className="item-header">
-                <div>
-                  <h3 style={{ marginBottom: '5px' }}>{item.titulo}</h3>
-                  <p style={{ color: '#ccc', fontStyle: 'italic', marginBottom: '10px', fontSize: '0.9em' }}>{item.descripcion}</p>
-                  
-                  {item.estado === 'aprobado' && (
-                    <button className="btn-action" style={{ background: '#333', color: '#fff', padding: '5px 15px', fontSize: '0.9em', marginTop: '10px', borderRadius: '4px', border: '1px solid var(--highlight-color)', cursor: 'pointer', fontWeight: 'bold' }} onClick={() => setForoActivo(item)}>
-                      💬 Entrar a la conversación
-                    </button>
-                  )}
+            <div key={item.id} className="item-card" style={{ flexDirection: 'row', padding: '20px', alignItems: 'center', gap: '20px', borderLeft: item.estado === 'aprobado' ? '6px solid #00e5ff' : '6px solid #555' }}>
+              
+              {/* Información del Hilo */}
+              <div style={{ flexGrow: 1 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
+                    <span style={{ padding: '3px 8px', borderRadius: '4px', fontSize: '0.7em', fontWeight: 'bold', letterSpacing: '1px', background: item.estado === 'aprobado' ? 'rgba(0, 229, 255, 0.1)' : 'rgba(255, 255, 255, 0.1)', color: item.estado === 'aprobado' ? '#00e5ff' : item.estado === 'rechazado' ? '#ff3333' : '#ffcc00' }}>
+                        {item.estado.toUpperCase()}
+                    </span>
+                    <span style={{ color: '#888', fontSize: '0.85em' }}>{new Date(item.fecha_creacion).toLocaleDateString()}</span>
                 </div>
-                {userRol === 'admin' && <button type="button" className="btn-delete" onClick={() => handleDelete(item.id)}>🗑️</button>}
+                
+                <h3 style={{ margin: '0 0 5px 0', fontSize: '1.4em', color: '#fff' }}>{item.titulo}</h3>
+                <p style={{ margin: '0 0 10px 0', color: '#aaa', fontSize: '0.95em', display: '-webkit-box', WebkitLineClamp: '2', WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{item.descripcion}</p>
+                
+                <p style={{ margin: 0, fontSize: '0.9em', color: '#777' }}>
+                    Iniciado por: <strong style={{ color: 'var(--highlight-color)', cursor: 'pointer' }} onClick={() => irAPerfil(item.autor)}>@{item.autor}</strong>
+                </p>
               </div>
 
-              {/* AUTOR CLICABLE DESDE LA LISTA */}
-              <p><strong>AUTOR:</strong> <span style={{ cursor: 'pointer', textDecoration: 'underline', color: 'var(--highlight-color)' }} onClick={() => irAPerfil(item.autor)}>@{item.autor}</span></p>
-              
-              <p><strong>ESTADO:</strong> 
-                <span style={{ marginLeft: '8px', padding: '3px 8px', borderRadius: '4px', fontSize: '0.8em', background: item.estado === 'aprobado' ? 'green' : item.estado === 'rechazado' ? 'red' : 'orange', color: 'white', fontWeight: 'bold' }}>
-                  {item.estado?.toUpperCase() || 'PENDIENTE'}
-                </span>
-              </p>
+              {/* Controles y Acceso */}
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '10px', minWidth: '150px' }}>
+                {item.estado === 'aprobado' && (
+                    <button className="btn-primary" style={{ width: '100%', padding: '10px', background: '#00e5ff', color: '#000', border: 'none' }} onClick={() => setForoActivo(item)}>
+                        ENTRAR 💬
+                    </button>
+                )}
+                
+                {userRol === 'admin' && (
+                    <div style={{ display: 'flex', gap: '5px', width: '100%' }}>
+                        {item.estado === 'pendiente' && (
+                            <>
+                                <button onClick={() => handleEstadoForo(item.id, 'aprobado')} style={{ flex: 1, padding: '8px', background: '#4ade80', color: '#000', border: 'none', cursor: 'pointer', fontWeight: 'bold', borderRadius: '4px' }}>✔</button>
+                                <button onClick={() => handleEstadoForo(item.id, 'rechazado')} style={{ flex: 1, padding: '8px', background: '#ff3333', color: '#fff', border: 'none', cursor: 'pointer', fontWeight: 'bold', borderRadius: '4px' }}>✖</button>
+                            </>
+                        )}
+                        <button onClick={() => handleDelete(item.id)} className="btn-delete" style={{ borderRadius: '4px', width: 'auto', flex: 1 }}>🗑️</button>
+                    </div>
+                )}
+              </div>
 
-              {userRol === 'admin' && item.estado === 'pendiente' && (
-                <div style={{ marginTop: '15px', display: 'flex', gap: '10px' }}>
-                  <button onClick={() => handleEstadoForo(item.id, 'aprobado')} style={{ padding: '8px', background: 'green', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>✅ APROBAR</button>
-                  <button onClick={() => handleEstadoForo(item.id, 'rechazado')} style={{ padding: '8px', background: 'red', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>❌ RECHAZAR</button>
-                </div>
-              )}
             </div>
           ))
         )}
