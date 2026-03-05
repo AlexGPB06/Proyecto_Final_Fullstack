@@ -39,7 +39,7 @@ CREATE TABLE `avisos_globales` (
 
 LOCK TABLES `avisos_globales` WRITE;
 /*!40000 ALTER TABLE `avisos_globales` DISABLE KEYS */;
-INSERT INTO `avisos_globales` VALUES (1,'Holaa','aLEJANDRO garcia','2026-03-04 16:54:01'),(2,'A','aLEJANDRO garcia','2026-03-04 22:17:43');
+INSERT INTO `avisos_globales` VALUES (1,'Pagina en estado Beta!!!','AlexGPB06','2026-03-05 05:09:03'),(2,'Mensaje de prueba automático','AdminTestPDG','2026-03-05 06:02:38');
 /*!40000 ALTER TABLE `avisos_globales` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -84,7 +84,7 @@ CREATE TABLE `calificaciones` (
   UNIQUE KEY `user_id` (`user_id`,`entidad_id`,`tipo_entidad`),
   CONSTRAINT `calificaciones_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
   CONSTRAINT `calificaciones_chk_1` CHECK (((`puntuacion` >= 1) and (`puntuacion` <= 5)))
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -93,7 +93,6 @@ CREATE TABLE `calificaciones` (
 
 LOCK TABLES `calificaciones` WRITE;
 /*!40000 ALTER TABLE `calificaciones` DISABLE KEYS */;
-INSERT INTO `calificaciones` VALUES (1,1,8,'cancion',5.0),(5,4,8,'cancion',4.5),(6,4,7,'cancion',2.0);
 /*!40000 ALTER TABLE `calificaciones` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -111,8 +110,9 @@ CREATE TABLE `canciones` (
   `genero` varchar(50) DEFAULT NULL,
   `fecha_agregada` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `imagen_url` varchar(500) DEFAULT NULL,
+  `vistas` int DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -121,7 +121,7 @@ CREATE TABLE `canciones` (
 
 LOCK TABLES `canciones` WRITE;
 /*!40000 ALTER TABLE `canciones` DISABLE KEYS */;
-INSERT INTO `canciones` VALUES (1,'Estado ','Palomas del gobierno','punk','2026-02-09 17:27:48',NULL),(2,'Todo','Palomas del gobierno','Punk','2026-02-09 17:57:11',NULL),(3,'Gimme Tha Power','Molotov','Rock Mexicano','2026-03-04 03:49:24',NULL),(4,'Afuera','Caifanes','Rock Clásico','2026-03-04 03:49:24',NULL);
+INSERT INTO `canciones` VALUES (1,'Estado De Alerta','Palomas Del Gobierno','Punk Rock','2026-03-05 04:59:27','/img/Estado De Alerta.jpg',0),(2,'Todo Por Nada','Palomas Del Gobierno','punk rock','2026-03-05 05:00:10','/img/Todo Por Nada.jpg',0),(3,'Lo Que Fue y Lo Que Va a Ser','Palomas Del Gobierno','punk rock','2026-03-05 05:00:47','/img/Lo Que Fue y Lo Que Va a Ser.jpg',0),(4,'Lo Que Fue y Lo Que Va a Ser (Re-Recording in Victoria Records)','Palomas Del Gobierno','punk rock','2026-03-05 05:01:51','/img/placeholder.png',0);
 /*!40000 ALTER TABLE `canciones` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -142,7 +142,7 @@ CREATE TABLE `comentarios` (
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `comentarios_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -151,7 +151,7 @@ CREATE TABLE `comentarios` (
 
 LOCK TABLES `comentarios` WRITE;
 /*!40000 ALTER TABLE `comentarios` DISABLE KEYS */;
-INSERT INTO `comentarios` VALUES (1,1,8,'cancion','Esta meh','2026-03-04 14:21:49'),(2,4,8,'cancion','Que dices es mid','2026-03-04 14:22:23'),(3,1,2,'foro','OLA','2026-03-04 15:10:11'),(4,4,7,'cancion','2','2026-03-04 22:13:36'),(5,3,3,'foro','No','2026-03-04 22:36:26');
+INSERT INTO `comentarios` VALUES (1,1,3,'foro','Lo permito','2026-03-05 05:37:12'),(2,1,4,'foro','Aceptado','2026-03-05 05:40:34');
 /*!40000 ALTER TABLE `comentarios` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -175,7 +175,7 @@ CREATE TABLE `destacados_home` (
 
 LOCK TABLES `destacados_home` WRITE;
 /*!40000 ALTER TABLE `destacados_home` DISABLE KEYS */;
-INSERT INTO `destacados_home` VALUES ('album1',2),('album2',1),('cancion1',7),('cancion2',8),('cancion3',2);
+INSERT INTO `destacados_home` VALUES ('album1',2),('album2',1),('cancion1',4),('cancion2',3),('cancion3',2);
 /*!40000 ALTER TABLE `destacados_home` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -196,7 +196,7 @@ CREATE TABLE `encuesta_votos` (
   KEY `user_id` (`user_id`),
   CONSTRAINT `encuesta_votos_ibfk_1` FOREIGN KEY (`encuesta_id`) REFERENCES `encuestas` (`id`) ON DELETE CASCADE,
   CONSTRAINT `encuesta_votos_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -205,7 +205,6 @@ CREATE TABLE `encuesta_votos` (
 
 LOCK TABLES `encuesta_votos` WRITE;
 /*!40000 ALTER TABLE `encuesta_votos` DISABLE KEYS */;
-INSERT INTO `encuesta_votos` VALUES (3,3,1,1),(5,3,4,2),(6,3,3,2);
 /*!40000 ALTER TABLE `encuesta_votos` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -226,7 +225,7 @@ CREATE TABLE `encuestas` (
   `activa` tinyint(1) DEFAULT '1',
   `fecha_creacion` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -235,7 +234,7 @@ CREATE TABLE `encuestas` (
 
 LOCK TABLES `encuestas` WRITE;
 /*!40000 ALTER TABLE `encuestas` DISABLE KEYS */;
-INSERT INTO `encuestas` VALUES (3,'Caleb esta guapo?','SI PAPI','NO PAPU',NULL,NULL,1,'2026-03-04 16:35:12');
+INSERT INTO `encuestas` VALUES (1,'Van a ir al evento del Cafe Iguana este 27 de Marzo!?','Si','No',NULL,NULL,1,'2026-03-05 05:05:23');
 /*!40000 ALTER TABLE `encuestas` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -254,7 +253,7 @@ CREATE TABLE `eventos` (
   `fecha_creacion` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `imagen_url` varchar(500) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -263,7 +262,7 @@ CREATE TABLE `eventos` (
 
 LOCK TABLES `eventos` WRITE;
 /*!40000 ALTER TABLE `eventos` DISABLE KEYS */;
-INSERT INTO `eventos` VALUES (1,'cafe iguana','2026-02-05','monterrey','2026-02-09 17:28:38',NULL),(2,'la tumba','2026-02-05','Barrio antiguo','2026-02-09 17:58:53',NULL),(3,'a','2026-03-31','23','2026-03-04 22:36:00','/img/placeholder.png');
+INSERT INTO `eventos` VALUES (4,'Cafe Iguana','2025-03-27','Monterrey','2026-03-05 05:06:19','/img/placeholder.png');
 /*!40000 ALTER TABLE `eventos` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -284,7 +283,7 @@ CREATE TABLE `foros` (
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `foros_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -293,7 +292,7 @@ CREATE TABLE `foros` (
 
 LOCK TABLES `foros` WRITE;
 /*!40000 ALTER TABLE `foros` DISABLE KEYS */;
-INSERT INTO `foros` VALUES (1,'Caleb ;p',NULL,1,'aprobado','2026-03-04 04:15:15'),(2,'Caleb esta guapo? ',NULL,4,'aprobado','2026-03-04 04:37:03'),(3,'A','A',3,'aprobado','2026-03-04 22:16:57');
+INSERT INTO `foros` VALUES (2,'Opiniones sobre nuestra nueva cancion','Queremos escuchar sus opiniones sobre la cancion nueva que sacamos',1,'aprobado','2026-03-05 05:08:10'),(4,'Nueva idea de conversacion','Aceptenme',5,'aprobado','2026-03-05 05:39:47');
 /*!40000 ALTER TABLE `foros` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -346,7 +345,7 @@ CREATE TABLE `mensajes_directos` (
   KEY `receptor_id` (`receptor_id`),
   CONSTRAINT `mensajes_directos_ibfk_1` FOREIGN KEY (`emisor_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
   CONSTRAINT `mensajes_directos_ibfk_2` FOREIGN KEY (`receptor_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -355,7 +354,6 @@ CREATE TABLE `mensajes_directos` (
 
 LOCK TABLES `mensajes_directos` WRITE;
 /*!40000 ALTER TABLE `mensajes_directos` DISABLE KEYS */;
-INSERT INTO `mensajes_directos` VALUES (1,4,3,'Que onda Akex',1,'2026-03-04 15:07:38'),(2,1,4,'he?',1,'2026-03-04 15:08:35'),(3,4,1,'ola',1,'2026-03-04 15:09:02'),(4,1,4,'Q PD',1,'2026-03-04 15:09:29'),(5,4,1,'a',1,'2026-03-04 15:40:12'),(6,4,1,'que quieres',1,'2026-03-04 15:57:15'),(7,3,4,'deja de estar jodiendo we',1,'2026-03-04 16:09:34'),(8,4,1,'Hola',1,'2026-03-04 22:14:07');
 /*!40000 ALTER TABLE `mensajes_directos` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -377,7 +375,7 @@ CREATE TABLE `notificaciones` (
   PRIMARY KEY (`id`),
   KEY `usuario_id` (`usuario_id`),
   CONSTRAINT `notificaciones_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -386,7 +384,7 @@ CREATE TABLE `notificaciones` (
 
 LOCK TABLES `notificaciones` WRITE;
 /*!40000 ALTER TABLE `notificaciones` DISABLE KEYS */;
-INSERT INTO `notificaciones` VALUES (1,2,'seguidor','@Caleb te ha agregado como amigo.','Caleb',0,'2026-03-04 15:40:16'),(2,1,'aviso','Caleb no se sabe las rolas','aLEJANDRO garcia',1,'2026-03-04 16:35:55'),(3,2,'aviso','Caleb no se sabe las rolas','aLEJANDRO garcia',0,'2026-03-04 16:35:55'),(4,4,'aviso','Caleb no se sabe las rolas','aLEJANDRO garcia',1,'2026-03-04 16:35:55'),(5,1,'aviso','Holaa','aLEJANDRO garcia',1,'2026-03-04 16:54:01'),(6,2,'aviso','Holaa','aLEJANDRO garcia',0,'2026-03-04 16:54:01'),(7,4,'aviso','Holaa','aLEJANDRO garcia',1,'2026-03-04 16:54:01'),(8,1,'aviso','A','aLEJANDRO garcia',1,'2026-03-04 22:17:43'),(9,2,'aviso','A','aLEJANDRO garcia',0,'2026-03-04 22:17:43'),(10,4,'aviso','A','aLEJANDRO garcia',0,'2026-03-04 22:17:43');
+INSERT INTO `notificaciones` VALUES (2,5,'aviso','Mensaje de prueba automático','AdminTestPDG',0,'2026-03-05 06:02:38');
 /*!40000 ALTER TABLE `notificaciones` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -491,7 +489,7 @@ CREATE TABLE `sugerencias` (
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `sugerencias_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -500,7 +498,6 @@ CREATE TABLE `sugerencias` (
 
 LOCK TABLES `sugerencias` WRITE;
 /*!40000 ALTER TABLE `sugerencias` DISABLE KEYS */;
-INSERT INTO `sugerencias` VALUES (3,'Otra prueba ','A','https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQq5CLerQ-NCoRqCCP3HjERUdZvYXtdtFyF2Q&s',4,'2026-03-04 22:11:47');
 /*!40000 ALTER TABLE `sugerencias` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -519,8 +516,9 @@ CREATE TABLE `tareas` (
   `completada` tinyint(1) DEFAULT '0',
   `fecha_creacion` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `imagen_url` varchar(500) DEFAULT NULL,
+  `vistas` int DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -529,7 +527,7 @@ CREATE TABLE `tareas` (
 
 LOCK TABLES `tareas` WRITE;
 /*!40000 ALTER TABLE `tareas` DISABLE KEYS */;
-INSERT INTO `tareas` VALUES (1,'ERROR HUMANO','LOS ERRROES DE LOS HUMANOS','media',0,'2026-02-09 17:51:27',NULL),(2,'Lo que fue','Lo que fue y lo que sera','media',0,'2026-02-09 17:58:22',NULL),(3,'a','a','alta',0,'2026-03-04 22:38:20','/img/placeholder.png');
+INSERT INTO `tareas` VALUES (1,'ERROR HUMANO','\"LOS ERRROES DE LOS HUMANOS\"','alta',0,'2026-03-05 05:04:20','/img/placeholder.png',0),(2,'Lo que fue','\"Lo que fue y lo que sera\"','alta',0,'2026-03-05 05:04:32','/img/placeholder.png',0);
 /*!40000 ALTER TABLE `tareas` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -556,7 +554,7 @@ CREATE TABLE `users` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`),
   UNIQUE KEY `username_2` (`username`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -565,7 +563,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'AlexGPB06','$2b$10$PDv/mG2uzsNeF01lTu1e.O5UmJq9YkobuZF3KwSvqCSBubBJ0uLmW','alejandrogarciapelayo@gmail.com','2026-02-09 17:23:47','fan','¡Hola! Soy un nuevo miembro de la comunidad Palomas del Gobierno.','2026-03-04 05:34:30',NULL,NULL,'publico','https://i.pinimg.com/564x/a3/be/71/a3be715f8f9330b6b5c3aee8e1ffbde4.jpg'),(2,'Alex','$2b$10$L82kUyqrpgnop.NOTKSAHO5jXOex4nCc9oHcNse9euWSeB2b0XPje','Al07011020@tecmilenio.mx','2026-02-09 17:56:22','fan','¡Hola! Soy un nuevo miembro de la comunidad Palomas del Gobierno.','2026-03-04 05:34:30',NULL,NULL,'publico','https://i.imgur.com/3p3E53e.png'),(3,'aLEJANDRO garcia','$2b$10$rY0IyznEiU467OK75XP5Q.PJ1uOALaIQKVR.oOoy8QSMjlFyemt7G','parodyentretaimentn@gmail.com','2026-03-04 03:50:47','admin','¡Hola! Soy un nuevo miembro de la comunidad Palomas del Gobierno.','2026-03-04 05:34:30',NULL,NULL,'publico','https://preview.redd.it/squidward-on-a-chair-the-orgin-v0-aona3du67z9g1.jpeg?width=947&format=pjpg&auto=webp&s=00f22730fbf4aa59e4ca39ee195cc7119d6af442'),(4,'Caleb','$2b$10$bmhJ7TwpLJpnQig9p8/NrePACZSNK2aQ5cqchnvy6URKucdNQdtdy','al07011020@tecmilenio.mx','2026-03-04 04:26:12','fan','¡Hola! Soy un nuevo miembro de la comunidad Palomas del Gobierno.','2026-03-04 05:34:30',NULL,NULL,'publico','https://m.media-amazon.com/images/M/MV5BYTNjNjQ4OWEtOTk5Ny00NWE3LTk5YjktNTdiMzViOTYzNDQyXkEyXkFqcGc@._V1_.jpg');
+INSERT INTO `users` VALUES (1,'AlexGPB06','$2b$10$B1QTRo4lJX3Gf0VwId6bb.d3xfs9JdgcIMe5m6i798jXK/IMKM3hK','alejandrogarciapelayo06@gmail.com','2026-03-05 04:47:17','admin','Primer Usuario Creado','2026-03-05 04:47:17','2006-05-23','Masculino','publico','https://i1.sndcdn.com/artworks-WIff86EPwqDBFC5j-GWdFkQ-t1080x1080.jpg'),(5,'Alex190','$2b$10$JeNS1C7bE0Y68e8lxegE1uWn9aT2OTbyFchw5aFnAcxdqzNi27ffu','al07011020@tecmilenio.mx','2026-03-05 05:39:18','fan',NULL,'2026-03-05 05:39:18','2006-05-23','Masculino','publico','https://i.imgur.com/3p3E53e.png');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -578,4 +576,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-03-04 19:00:48
+-- Dump completed on 2026-03-05  0:08:17
