@@ -82,20 +82,31 @@ exports.updateFoto = (req, res, next) => { db.execute('UPDATE users SET foto_per
 exports.getFans = (req, res, next) => { db.execute('SELECT id, username, rol, descripcion, fecha_registro, foto_perfil FROM users WHERE id != ? AND rol = "fan" ORDER BY username ASC', [req.user.id], (err, rows) => { if (err) return next(err); res.json(rows); }); };
 exports.getMisAmigos = (req, res, next) => { db.execute('SELECT u.id, u.username, u.foto_perfil FROM seguidores s JOIN users u ON s.seguido_id = u.id WHERE s.seguidor_id = ?', [req.user.id], (err, rows) => { if (err) return next(err); res.json(rows); }); };
 
+// LA CORRECCIÓN ESTÁ EN ESTA FUNCIÓN (toggleSeguir)
 exports.toggleSeguir = (req, res, next) => {
     const seguido_id = req.params.id;
     db.execute('SELECT rol FROM users WHERE id = ?', [seguido_id], (err, rows) => {
         if (err) return next(err);
         if (rows.length > 0 && rows[0].rol === 'admin') return res.status(403).json({ message: 'No puedes agregar a un administrador.' });
+        
         db.execute('INSERT INTO seguidores (seguidor_id, seguido_id) VALUES (?, ?)', [req.user.id, seguido_id], (err) => {
             if (err && err.code === 'ER_DUP_ENTRY') {
                 db.execute('DELETE FROM seguidores WHERE seguidor_id = ? AND seguido_id = ?', [req.user.id, seguido_id], (errDel) => {
-                    if (errDel) return next(errDel); res.json({ message: 'Amigo eliminado', siguiendo: false });
+                    if (errDel) return next(errDel); 
+                    res.json({ message: 'Amigo eliminado', siguiendo: false });
                 });
-            } else if (err) { return next(err); 
+            } else if (err) { 
+                return next(err); 
             } else { 
-                db.execute('INSERT INTO notificaciones (usuario_id, tipo, mensaje, remitente_username) VALUES (?, "seguidor", ?, ?)', [seguido_id, `@${req.user.username} te ha agregado como amigo.`, req.user.username]);
-                res.json({ message: 'Amigo agregado a tu lista', siguiendo: true }); 
+                // AQUÍ SE AGREGÓ LA FUNCIÓN CALLBACK PARA LA NOTIFICACIÓN
+                db.execute(
+                    'INSERT INTO notificaciones (usuario_id, tipo, mensaje, remitente_username) VALUES (?, "seguidor", ?, ?)', 
+                    [seguido_id, `@${req.user.username} te ha agregado como amigo.`, req.user.username],
+                    (errNotif) => {
+                        if (errNotif) console.error("Error al notificar:", errNotif);
+                        res.json({ message: 'Amigo agregado a tu lista', siguiendo: true }); 
+                    }
+                );
             }
         });
     });
